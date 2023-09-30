@@ -47,6 +47,7 @@ class _HomePageState extends State<HomePage>
   late final textTheme = Theme.of(context).textTheme;
   File? imageInFile;
   final valorTotal = ValueNotifier(0.0);
+  late final size = MediaQuery.sizeOf(context);
 
   final leituras = ValueNotifier(<LeituraModel>[]);
   Future<void> saveData() async {
@@ -326,14 +327,8 @@ class _HomePageState extends State<HomePage>
                                                 builder: (context) {
                                                   return Dialog(
                                                     child: Container(
-                                                      height: MediaQuery.sizeOf(
-                                                                  context)
-                                                              .width *
-                                                          0.7,
-                                                      width: MediaQuery.sizeOf(
-                                                                  context)
-                                                              .width *
-                                                          0.7,
+                                                      height: size.width * 0.9,
+                                                      width: size.width * 0.9,
                                                       decoration: BoxDecoration(
                                                         borderRadius:
                                                             BorderRadius
