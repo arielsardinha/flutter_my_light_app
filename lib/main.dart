@@ -189,6 +189,8 @@ class _HomePageState extends State<HomePage>
                   decoration: const InputDecoration(
                     isDense: true,
                     border: OutlineInputBorder(),
+                    label: Text('valor total de kwh'),
+                    hintText: 'Adicione o valor total de kwh do relógio',
                   ),
                 ),
                 const SizedBox(
@@ -250,6 +252,17 @@ class _HomePageState extends State<HomePage>
                                 leituraAtual: leitura,
                                 leituraAnterior: previousleitura);
 
+                            final currentDate =
+                                dateFormatDateTimeInStringFullTime(
+                                    DateTime.fromMillisecondsSinceEpoch(
+                                        leitura.dataInMilisegundos));
+
+                            final previusDate = previousleitura != null
+                                ? dateFormatDateTimeInStringFullTime(
+                                    DateTime.fromMillisecondsSinceEpoch(
+                                        previousleitura.dataInMilisegundos))
+                                : "'Nenhuma data anterior'";
+
                             return Container(
                               width: double.maxFinite,
                               padding: const EdgeInsets.symmetric(vertical: 8),
@@ -273,10 +286,7 @@ class _HomePageState extends State<HomePage>
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                dateFormatDateTimeInString(DateTime
-                                                    .fromMillisecondsSinceEpoch(
-                                                        leitura
-                                                            .dataInMilisegundos)),
+                                                currentDate,
                                               ),
                                               const SizedBox(
                                                 height: 8,
@@ -296,7 +306,7 @@ class _HomePageState extends State<HomePage>
                                                       'Valor: ${formatCurrencyEuro(value)}',
                                                     ),
                                                     Positioned(
-                                                      right: -10,
+                                                      right: -15,
                                                       bottom: -14,
                                                       child: PopupMenuButton(
                                                         iconSize: 15,
@@ -305,10 +315,10 @@ class _HomePageState extends State<HomePage>
                                                               .error_outline_rounded,
                                                         ),
                                                         itemBuilder: (context) {
-                                                          return const [
+                                                          return [
                                                             PopupMenuItem(
                                                               child: Text(
-                                                                'Esse valor é referente o mês anterior',
+                                                                'Esse valor é referente a $previusDate',
                                                               ),
                                                             ),
                                                           ];
