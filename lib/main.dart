@@ -6,6 +6,7 @@ import 'package:my_light_app/core/storage/storage.dart';
 import 'package:my_light_app/models/leitura_model.dart';
 import 'package:my_light_app/utils/mixins/convert_currency.dart';
 import 'package:my_light_app/utils/mixins/convert_file.dart';
+import 'package:my_light_app/utils/mixins/date_formate.dart';
 import 'package:validatorless/validatorless.dart';
 
 void main() {
@@ -38,7 +39,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage>
-    with FormatFileMixin, FormatCurrencyMixin {
+    with FormatFileMixin, FormatCurrencyMixin, DateFormatMixin {
   final controller = TextEditingController();
   final picker = ImagePicker();
   final imageInUint8List = ValueNotifier(Uint8List(0));
@@ -95,11 +96,18 @@ class _HomePageState extends State<HomePage>
   }
 
   void calcularFaturaTotal() {
-    final leituras = [...this.leituras.value];
+    final leiturasEntries = [...leituras.value].asMap().entries.toList();
 
-    int somaKwh = 0;
-    for (LeituraModel leitura in leituras) {
-      somaKwh += int.parse(leitura.contador);
+    double somaKwh = 0;
+
+    for (var i = 0; i < leiturasEntries.length; i++) {
+      final index = leiturasEntries[i].key;
+      final leitura = leiturasEntries[i].value;
+      final previousleitura =
+          index > 0 ? leiturasEntries[index - 1].value : null;
+      final currentValue = calcularValorKWH(
+          leituraAtual: leitura, leituraAnterior: previousleitura);
+      somaKwh += currentValue;
     }
 
     double valorTotalFatura = somaKwh * LeituraModel.precoPorKwh;
@@ -131,8 +139,10 @@ class _HomePageState extends State<HomePage>
 
   @override
   void initState() {
-    getAllData();
-    calcularFaturaTotal();
+    (() async {
+      await getAllData();
+      calcularFaturaTotal();
+    })();
     super.initState();
   }
 
@@ -262,10 +272,10 @@ class _HomePageState extends State<HomePage>
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                DateTime.fromMillisecondsSinceEpoch(
+                                                dateFormatDateTimeInString(DateTime
+                                                    .fromMillisecondsSinceEpoch(
                                                         leitura
-                                                            .dataInMilisegundos)
-                                                    .toIso8601String(),
+                                                            .dataInMilisegundos)),
                                               ),
                                               const SizedBox(
                                                 height: 8,
