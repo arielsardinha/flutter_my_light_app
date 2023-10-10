@@ -138,6 +138,28 @@ class _HomePageState extends State<HomePage>
     return diferencaKwh * LeituraModel.precoPorKwh;
   }
 
+  Future<void> deletarLeitura(LeituraModel leitura) async {
+    final data = await widget.storage.get<List>(StorageEnum.data);
+
+    if (data == null) return;
+    final leituras = data.map((e) => LeituraModel.fromJson(e)).toList();
+    final leituraParaSelecionar = leituras
+        .firstWhere((l) => l.dataInMilisegundos == leitura.dataInMilisegundos);
+    leituras.remove(leituraParaSelecionar);
+
+    final List<Map<String, dynamic>> leiturasInJson = [];
+
+    for (LeituraModel leitura in leituras) {
+      leiturasInJson.add(leitura.toJson());
+    }
+    await widget.storage.save<List<Map<String, dynamic>>>(
+      key: StorageEnum.data,
+      value: leiturasInJson,
+    );
+    await getAllData();
+    calcularFaturaTotal();
+  }
+
   @override
   void initState() {
     (() async {
@@ -149,6 +171,8 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return RefreshIndicator(
       onRefresh: () async {
         await getAllData();
@@ -263,123 +287,180 @@ class _HomePageState extends State<HomePage>
                                         previousleitura.dataInMilisegundos))
                                 : "'Nenhuma data anterior'";
 
-                            return Container(
-                              width: double.maxFinite,
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Card(
-                                color: Colors.white,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8, horizontal: 16),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                            return Stack(
+                              children: [
+                                Container(
+                                  width: double.maxFinite,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8),
+                                  child: Card(
+                                    color: Colors.white,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8, horizontal: 16),
+                                      child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Column(
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                currentDate,
-                                              ),
-                                              const SizedBox(
-                                                height: 8,
-                                              ),
-                                              Text(
-                                                "Contador: ${leitura.contador} kW",
-                                              ),
-                                              const SizedBox(
-                                                height: 8,
-                                              ),
-                                              SizedBox(
-                                                width: 120,
-                                                child: Stack(
-                                                  clipBehavior: Clip.none,
-                                                  children: [
-                                                    Text(
-                                                      'Valor: ${formatCurrencyEuro(value)}',
-                                                    ),
-                                                    Positioned(
-                                                      right: -15,
-                                                      bottom: -14,
-                                                      child: PopupMenuButton(
-                                                        iconSize: 15,
-                                                        icon: const Icon(
-                                                          Icons
-                                                              .error_outline_rounded,
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    currentDate,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 8,
+                                                  ),
+                                                  Text(
+                                                    "Contador: ${leitura.contador} kW",
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 8,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 120,
+                                                    child: Stack(
+                                                      clipBehavior: Clip.none,
+                                                      children: [
+                                                        Text(
+                                                          'Valor: ${formatCurrencyEuro(value)}',
                                                         ),
-                                                        itemBuilder: (context) {
-                                                          return [
-                                                            PopupMenuItem(
-                                                              child: Text(
-                                                                'Esse valor é referente a $previusDate',
-                                                              ),
+                                                        Positioned(
+                                                          right: -15,
+                                                          bottom: -14,
+                                                          child:
+                                                              PopupMenuButton(
+                                                            iconSize: 15,
+                                                            icon: const Icon(
+                                                              Icons
+                                                                  .error_outline_rounded,
                                                             ),
-                                                          ];
-                                                        },
-                                                      ),
+                                                            itemBuilder:
+                                                                (context) {
+                                                              return [
+                                                                PopupMenuItem(
+                                                                  child: Text(
+                                                                    'Esse valor é referente a $previusDate',
+                                                                  ),
+                                                                ),
+                                                              ];
+                                                            },
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
-                                                  ],
-                                                ),
+                                                  ),
+                                                ],
                                               ),
-                                            ],
-                                          ),
-                                          InkWell(
-                                            onTap: () {
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return Dialog(
-                                                    child: Container(
-                                                      height: size.width * 0.9,
-                                                      width: size.width * 0.9,
-                                                      decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(24),
-                                                        image: DecorationImage(
-                                                          fit: BoxFit.cover,
-                                                          image: MemoryImage(
-                                                            extractDecodeBitAndConvertToUint8List(
-                                                              leitura.photo,
+                                              InkWell(
+                                                onTap: () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return Dialog(
+                                                        child: Container(
+                                                          height:
+                                                              size.width * 0.9,
+                                                          width:
+                                                              size.width * 0.9,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        24),
+                                                            image:
+                                                                DecorationImage(
+                                                              fit: BoxFit.cover,
+                                                              image:
+                                                                  MemoryImage(
+                                                                extractDecodeBitAndConvertToUint8List(
+                                                                  leitura.photo,
+                                                                ),
+                                                              ),
                                                             ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    ),
+                                                      );
+                                                    },
                                                   );
                                                 },
-                                              );
-                                            },
-                                            child: Container(
-                                              height: 100,
-                                              width: 100,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(16),
-                                                image: DecorationImage(
-                                                  fit: BoxFit.cover,
-                                                  image: MemoryImage(
-                                                    extractDecodeBitAndConvertToUint8List(
-                                                      leitura.photo,
+                                                child: Container(
+                                                  height: 100,
+                                                  width: 100,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            16),
+                                                    image: DecorationImage(
+                                                      fit: BoxFit.cover,
+                                                      image: MemoryImage(
+                                                        extractDecodeBitAndConvertToUint8List(
+                                                          leitura.photo,
+                                                        ),
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
+                                            ],
                                           ),
                                         ],
                                       ),
-                                    ],
+                                    ),
                                   ),
                                 ),
-                              ),
+                                Positioned(
+                                  right: -10,
+                                  top: -10,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog.adaptive(
+                                            contentTextStyle: theme
+                                                .textTheme.labelMedium
+                                                ?.copyWith(
+                                                    color: theme
+                                                        .colorScheme.error),
+                                            title: const Text(
+                                                'Tem certeza que deseja excluir ?'),
+                                            content: const Text(
+                                                'Isso não poderá ser desfeito!'),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text('Não'),
+                                              ),
+                                              FilledButton(
+                                                onPressed: () {
+                                                  deletarLeitura(leitura);
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text('Sim'),
+                                              )
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                    icon: Icon(
+                                      Icons.delete,
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             );
                           },
                         )
