@@ -47,6 +47,7 @@ class _HomePageState extends State<HomePage>
   late final textTheme = Theme.of(context).textTheme;
   File? imageInFile;
   final valorTotal = ValueNotifier(0.0);
+  final valorTotalKwh = ValueNotifier(0.0);
   late final size = MediaQuery.sizeOf(context);
 
   final leituras = ValueNotifier(<LeituraModel>[]);
@@ -110,10 +111,29 @@ class _HomePageState extends State<HomePage>
           leituraAtual: leitura, leituraAnterior: previousleitura);
       somaKwh += currentValue;
     }
-
-    double valorTotalFatura = somaKwh * LeituraModel.precoPorKwh;
+    valorTotalKwh.value = somaKwh;
+    final valorTotalFatura = calcularValorTotalFatura(somaKwh);
 
     valorTotal.value = valorTotalFatura;
+  }
+
+  double calcularValorTotalFatura(double somaKwh) {
+    double valor = 0.0;
+
+    if (somaKwh <= 30) {
+      valor = somaKwh * 0.987;
+    } else if (somaKwh <= 100) {
+      valor = (30 * 0.987) + (somaKwh - 30) * 0.5527;
+    } else if (somaKwh <= 220) {
+      valor = (30 * 0.987) + (70 * 0.5527) + (somaKwh - 100) * 0.8749;
+    } else {
+      valor = (30 * 0.987) +
+          (70 * 0.5527) +
+          (120 * 0.8749) +
+          (somaKwh - 220) * 0.94211;
+    }
+
+    return valor;
   }
 
   Future<void> getAllData() async {
@@ -135,7 +155,7 @@ class _HomePageState extends State<HomePage>
     final int diferencaKwh =
         (int.parse(leituraAtual.contador) - int.parse(leituraAnterior.contador))
             .abs();
-    return diferencaKwh * LeituraModel.precoPorKwh;
+    return diferencaKwh.toDouble();
   }
 
   Future<void> deletarLeitura(LeituraModel leitura) async {
@@ -187,9 +207,9 @@ class _HomePageState extends State<HomePage>
               children: [
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: ValueListenableBuilder(
-                    valueListenable: valorTotal,
-                    builder: (context, value, snapshot) {
+                  child: AnimatedBuilder(
+                    animation: Listenable.merge([valorTotal, valorTotalKwh]),
+                    builder: (context, snapshot) {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -198,7 +218,11 @@ class _HomePageState extends State<HomePage>
                             style: textTheme.titleMedium,
                           ),
                           Text(
-                            'Valor Total: ${formatCurrencyEuro(value)}',
+                            'Valor Total: ${formatCurrencyEuro(valorTotal.value)}',
+                            style: textTheme.labelMedium,
+                          ),
+                          Text(
+                            'Total Kwh: ${formatCurrencyEuro(valorTotalKwh.value)}',
                             style: textTheme.labelMedium,
                           ),
                         ],
