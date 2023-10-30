@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage>
   late final textTheme = Theme.of(context).textTheme;
   File? imageInFile;
   final valorTotal = ValueNotifier(0.0);
-  final valorTotalKwh = ValueNotifier(0.0);
+  final valorTotalKwh = ValueNotifier(0);
   late final size = MediaQuery.sizeOf(context);
 
   final leituras = ValueNotifier(<LeituraModel>[]);
@@ -111,7 +111,7 @@ class _HomePageState extends State<HomePage>
           leituraAtual: leitura, leituraAnterior: previousleitura);
       somaKwh += currentValue;
     }
-    valorTotalKwh.value = somaKwh;
+    valorTotalKwh.value = somaKwh.toInt();
     final valorTotalFatura = calcularValorTotalFatura(somaKwh);
 
     valorTotal.value = valorTotalFatura;
@@ -222,7 +222,7 @@ class _HomePageState extends State<HomePage>
                             style: textTheme.labelMedium,
                           ),
                           Text(
-                            'Total Kwh: ${formatCurrencyEuro(valorTotalKwh.value)}',
+                            'Total Kwh: ${valorTotalKwh.value}',
                             style: textTheme.labelMedium,
                           ),
                         ],
