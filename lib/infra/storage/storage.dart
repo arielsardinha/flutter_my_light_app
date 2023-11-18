@@ -19,4 +19,9 @@ class Storage {
     if (data == null) return null;
     return jsonDecode(data)['data'];
   }
+
+  Future<void> delete<T>(StorageEnum key) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove(key.name);
+  }
 }

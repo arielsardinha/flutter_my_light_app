@@ -39,6 +39,7 @@ dependencies:
   path: ^1.8.3
   validatorless: ^1.2.3
   intl: ^0.18.1
+  flutter_bloc: ^8.1.3
 
 dev_dependencies:
   flutter_test:
