@@ -7,11 +7,11 @@ mixin FormatFileMixin {
   String convertImageFileToBase64String(File file) {
     try {
       final type = p.extension(file.path).replaceAll('.', '');
-
-      final decodeBit = base64Encode(file.readAsBytesSync());
-      return "data:image/$type;base64,$decodeBit";
+      final bytes = file.readAsBytesSync();
+      final encodeBit = base64Encode(bytes);
+      return "data:image/$type;base64,$encodeBit";
     } catch (e) {
-      throw 'Erro ao converter imagem';
+      throw Exception('Erro ao converter imagem: $e');
     }
   }
 

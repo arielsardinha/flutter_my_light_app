@@ -14,6 +14,9 @@ class RemoteCreateLeitura with FormatFileMixin implements CreateLeituraUseCase {
     required File photo,
     required String contador,
   }) async {
+    if (contador.isEmpty || photo.path.isEmpty) {
+      throw Exception('Campos obrigatórios não preenchidos');
+    }
     await _storage.delete(StorageEnum.data);
 
     final leitura = LeituraModel(
