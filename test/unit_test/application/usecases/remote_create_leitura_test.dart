@@ -16,10 +16,10 @@ void main() {
   setUpAll(() {
     tempFile = File('test_image.png');
     ioSink = tempFile.openWrite();
+    storage = MockStorage();
   });
 
   setUp(() async {
-    storage = MockStorage();
     createLeituraUseCase = RemoteCreateLeitura(
       storage: storage,
     );

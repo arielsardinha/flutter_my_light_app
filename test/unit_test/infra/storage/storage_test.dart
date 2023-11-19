@@ -3,9 +3,11 @@ import 'package:my_light_app/infra/storage/storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  SharedPreferences.setMockInitialValues({});
   late Storage storage;
-  setUp(() {
+
+  setUpAll(() {
+    SharedPreferences.setMockInitialValues({});
+
     storage = StorageSharedPreferences();
   });
 
