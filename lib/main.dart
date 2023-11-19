@@ -250,10 +250,6 @@ class _HomePageState extends State<HomePage>
                         );
                       }
 
-                      if (state is LeituraStateError) {
-                        return const Text('Tente novamente mais tarde!');
-                      }
-
                       if (state is LeituraStateLoaded) {
                         final leituras = state.leituras;
                         return Column(

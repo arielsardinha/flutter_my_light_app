@@ -19,40 +19,28 @@ class LeituraBloc extends Bloc<LeituraEvent, LeituraState> {
         _createLeituraUseCase = createLeituraUseCase,
         super(LeituraStateInitial()) {
     on<LeituraEventGetLeituras>((event, emit) async {
-      try {
-        emit(LeituraStateLoading());
-        final leituras = await _getLeiturasUseCase.exec();
-        emit(LeituraStateLoaded(leituras: leituras));
-      } catch (e) {
-        emit(LeituraStateError());
-      }
+      emit(LeituraStateLoading());
+      final leituras = await _getLeiturasUseCase.exec();
+      emit(LeituraStateLoaded(leituras: leituras));
     });
 
     on<LeituraEventDeleteLeitura>((event, emit) async {
-      try {
-        emit(LeituraStateLoading());
-        await _deleteLeituraUseCase.exec(
-          leituras: event.leituras,
-          leitura: event.leitura,
-        );
-        add(LeituraEventGetLeituras());
-      } catch (e) {
-        emit(LeituraStateError());
-      }
+      emit(LeituraStateLoading());
+      await _deleteLeituraUseCase.exec(
+        leituras: event.leituras,
+        leitura: event.leitura,
+      );
+      add(LeituraEventGetLeituras());
     });
 
     on<LeituraEventCreateLeitura>((event, emit) async {
-      try {
-        emit(LeituraStateLoading());
-        await _createLeituraUseCase.exec(
-          leituras: event.leituras,
-          photo: event.photo,
-          contador: event.contador,
-        );
-        add(LeituraEventGetLeituras());
-      } catch (e) {
-        emit(LeituraStateError());
-      }
+      emit(LeituraStateLoading());
+      await _createLeituraUseCase.exec(
+        leituras: event.leituras,
+        photo: event.photo,
+        contador: event.contador,
+      );
+      add(LeituraEventGetLeituras());
     });
   }
 }

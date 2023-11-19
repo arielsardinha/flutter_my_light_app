@@ -11,5 +11,3 @@ class LeituraStateLoaded extends LeituraState {
 
   LeituraStateLoaded({required this.leituras});
 }
-
-class LeituraStateError extends LeituraState {}

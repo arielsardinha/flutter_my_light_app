@@ -3,10 +3,19 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i3;
+import 'dart:async' as _i4;
+import 'dart:io' as _i9;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:my_light_app/infra/storage/storage.dart' as _i2;
+import 'package:my_light_app/enterprise/entities/leitura_entity.dart' as _i7;
+import 'package:my_light_app/enterprise/entities/leituras_entity.dart' as _i2;
+import 'package:my_light_app/enterprise/usecases/create_leitura_usecase.dart'
+    as _i8;
+import 'package:my_light_app/enterprise/usecases/delete_leitura_usecase.dart'
+    as _i6;
+import 'package:my_light_app/enterprise/usecases/get_leituras_usecase.dart'
+    as _i5;
+import 'package:my_light_app/infra/storage/storage.dart' as _i3;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -21,13 +30,24 @@ import 'package:my_light_app/infra/storage/storage.dart' as _i2;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
+class _FakeLeiturasEntity_0 extends _i1.SmartFake
+    implements _i2.LeiturasEntity {
+  _FakeLeiturasEntity_0(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [Storage].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockStorage extends _i1.Mock implements _i2.Storage {
+class MockStorage extends _i1.Mock implements _i3.Storage {
   @override
-  _i3.Future<void> save<T>({
-    required _i2.StorageEnum? key,
+  _i4.Future<void> save<T>({
+    required _i3.StorageEnum? key,
     required T? value,
   }) =>
       (super.noSuchMethod(
@@ -39,28 +59,107 @@ class MockStorage extends _i1.Mock implements _i2.Storage {
             #value: value,
           },
         ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i3.Future<T?> get<T extends Object>(_i2.StorageEnum? key) =>
+  _i4.Future<T?> get<T extends Object>(_i3.StorageEnum? key) =>
       (super.noSuchMethod(
         Invocation.method(
           #get,
           [key],
         ),
-        returnValue: _i3.Future<T?>.value(),
-        returnValueForMissingStub: _i3.Future<T?>.value(),
-      ) as _i3.Future<T?>);
+        returnValue: _i4.Future<T?>.value(),
+        returnValueForMissingStub: _i4.Future<T?>.value(),
+      ) as _i4.Future<T?>);
 
   @override
-  _i3.Future<void> delete(_i2.StorageEnum? key) => (super.noSuchMethod(
+  _i4.Future<void> delete(_i3.StorageEnum? key) => (super.noSuchMethod(
         Invocation.method(
           #delete,
           [key],
         ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+}
+
+/// A class which mocks [GetLeiturasUseCase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetLeiturasUseCase extends _i1.Mock
+    implements _i5.GetLeiturasUseCase {
+  @override
+  _i4.Future<_i2.LeiturasEntity> exec() => (super.noSuchMethod(
+        Invocation.method(
+          #exec,
+          [],
+        ),
+        returnValue: _i4.Future<_i2.LeiturasEntity>.value(_FakeLeiturasEntity_0(
+          this,
+          Invocation.method(
+            #exec,
+            [],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<_i2.LeiturasEntity>.value(_FakeLeiturasEntity_0(
+          this,
+          Invocation.method(
+            #exec,
+            [],
+          ),
+        )),
+      ) as _i4.Future<_i2.LeiturasEntity>);
+}
+
+/// A class which mocks [DeleteLeituraUseCase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockDeleteLeituraUseCase extends _i1.Mock
+    implements _i6.DeleteLeituraUseCase {
+  @override
+  _i4.Future<void> exec({
+    required _i2.LeiturasEntity? leituras,
+    required _i7.LeituraEntity? leitura,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #exec,
+          [],
+          {
+            #leituras: leituras,
+            #leitura: leitura,
+          },
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+}
+
+/// A class which mocks [CreateLeituraUseCase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockCreateLeituraUseCase extends _i1.Mock
+    implements _i8.CreateLeituraUseCase {
+  @override
+  _i4.Future<void> exec({
+    required _i2.LeiturasEntity? leituras,
+    required _i9.File? photo,
+    required String? contador,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #exec,
+          [],
+          {
+            #leituras: leituras,
+            #photo: photo,
+            #contador: contador,
+          },
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }
