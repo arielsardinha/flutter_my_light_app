@@ -1,4 +1,4 @@
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_light_app/blocs/leitura_bloc/leitura_event.dart';
 import 'package:my_light_app/blocs/leitura_bloc/leitura_state.dart';
 import 'package:my_light_app/enterprise/usecases/create_leitura_usecase.dart';

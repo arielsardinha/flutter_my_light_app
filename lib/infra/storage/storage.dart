@@ -1,18 +1,25 @@
 import 'dart:convert';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum StorageEnum {
   data;
 }
 
-class Storage {
+abstract interface class Storage {
+  Future<void> save<T>({required StorageEnum key, required T value});
+  Future<T?> get<T extends Object>(StorageEnum key);
+  Future<void> delete(StorageEnum key);
+}
+
+class StorageSharedPreferences implements Storage {
+  @override
   Future<void> save<T>({required StorageEnum key, required T value}) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(key.name, jsonEncode({'data': value}));
   }
 
-  Future<T?> get<T>(StorageEnum key) async {
+  @override
+  Future<T?> get<T extends Object>(StorageEnum key) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     final data = prefs.getString(key.name);
@@ -20,7 +27,8 @@ class Storage {
     return jsonDecode(data)['data'];
   }
 
-  Future<void> delete<T>(StorageEnum key) async {
+  @override
+  Future<void> delete(StorageEnum key) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove(key.name);
   }

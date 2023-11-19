@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final storage = Storage();
+    final storage = StorageSharedPreferences();
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
