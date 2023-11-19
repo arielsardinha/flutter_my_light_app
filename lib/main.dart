@@ -267,8 +267,7 @@ class _HomePageState extends State<HomePage>
                                     ? leituras.leituras[index - 1]
                                     : null;
 
-                                final value = leituras.calcularValorKWH(
-                                    leituraAtual: leitura,
+                                final value = leitura.calcularValorKWH(
                                     leituraAnterior: previousleitura);
 
                                 final currentDate =

@@ -6,42 +6,18 @@ class LeiturasEntity {
   LeiturasEntity({required this.leituras});
 
   ({int valorTotalKwh, double valorTotal}) calcularFaturaTotal() {
-    final leiturasEntries = [...leituras].asMap().entries.toList();
+    double somaKwh = leituras.fold(
+        0,
+        (previousValue, element) =>
+            previousValue + int.parse(element.contador));
 
-    double somaKwh = 0;
-
-    for (var i = 0; i < leiturasEntries.length; i++) {
-      final index = leiturasEntries[i].key;
-      final leitura = leiturasEntries[i].value;
-      final previousleitura =
-          index > 0 ? leiturasEntries[index - 1].value : null;
-      final currentValue = calcularValorKWH(
-          leituraAtual: leitura, leituraAnterior: previousleitura);
-      somaKwh += currentValue;
-    }
     final valorTotalKwh = somaKwh.toInt();
     final valorTotalFatura = _calcularValorTotalFatura(somaKwh);
 
-    final valorTotal = valorTotalFatura;
-
     return (
       valorTotalKwh: valorTotalKwh,
-      valorTotal: valorTotal,
+      valorTotal: valorTotalFatura,
     );
-  }
-
-  double calcularValorKWH({
-    required LeituraEntity leituraAtual,
-    LeituraEntity? leituraAnterior,
-  }) {
-    if (leituraAnterior == null) {
-      return 0.0;
-    }
-
-    final int diferencaKwh =
-        (int.parse(leituraAtual.contador) - int.parse(leituraAnterior.contador))
-            .abs();
-    return diferencaKwh.toDouble();
   }
 
   double _calcularValorTotalFatura(double somaKwh) {
@@ -60,6 +36,6 @@ class LeiturasEntity {
           (somaKwh - 220) * 0.94211;
     }
 
-    return valor;
+    return double.parse(valor.toStringAsFixed(2));
   }
 }
