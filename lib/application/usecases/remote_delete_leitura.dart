@@ -9,9 +9,10 @@ class RemoteDeleteLeitura implements DeleteLeituraUseCase {
 
   RemoteDeleteLeitura({required Storage storage}) : _storage = storage;
   @override
-  Future<void> exec(
-      {required LeiturasEntity leituras,
-      required LeituraEntity leitura}) async {
+  Future<void> exec({
+    required LeiturasEntity leituras,
+    required LeituraEntity leitura,
+  }) async {
     leituras.leituras.remove(leitura);
 
     final leiturasModel = leituras.leituras.map((leitura) {
