@@ -1,3 +1,4 @@
+import 'package:image_picker/image_picker.dart';
 import 'package:mockito/annotations.dart';
 import 'package:my_light_app/enterprise/usecases/create_leitura_usecase.dart';
 import 'package:my_light_app/enterprise/usecases/delete_leitura_usecase.dart';
@@ -8,6 +9,7 @@ import 'package:my_light_app/infra/storage/storage.dart';
   MockSpec<Storage>(),
   MockSpec<GetLeiturasUseCase>(),
   MockSpec<DeleteLeituraUseCase>(),
-  MockSpec<CreateLeituraUseCase>()
+  MockSpec<CreateLeituraUseCase>(),
+  MockSpec<ImagePicker>()
 ])
 void main() {}

@@ -35,6 +35,7 @@ class MyApp extends StatelessWidget {
       ),
       home: HomePage(
         storage: storage,
+        picker: ImagePicker(),
         leituraBloc: LeituraBloc(
           getLeiturasUseCase: RemoteGetLeituras(
             storage: storage,
@@ -54,10 +55,12 @@ class MyApp extends StatelessWidget {
 class HomePage extends StatefulWidget {
   final Storage storage;
   final LeituraBloc leituraBloc;
+  final ImagePicker picker;
   const HomePage({
     super.key,
     required this.storage,
     required this.leituraBloc,
+    required this.picker,
   });
 
   @override
@@ -66,7 +69,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with FormatFileMixin, FormatCurrencyMixin, DateFormatMixin {
-  final picker = ImagePicker();
   final controller = TextEditingController();
   final formKey = GlobalKey<FormState>();
   late final size = MediaQuery.sizeOf(context);
@@ -173,14 +175,17 @@ class _HomePageState extends State<HomePage>
                           children: [
                             Text(
                               'Registre sua energia elétrica',
+                              key: const Key('title'),
                               style: textTheme.titleMedium,
                             ),
                             Text(
                               'Valor Total: ${formatCurrencyEuro(valorTotal.value)}',
+                              key: const Key('valor_total'),
                               style: textTheme.labelMedium,
                             ),
                             Text(
                               'Total Kwh: ${valorTotalKwh.value}',
+                              key: const Key('valor_total_kwh'),
                               style: textTheme.labelMedium,
                             ),
                           ],
@@ -214,8 +219,8 @@ class _HomePageState extends State<HomePage>
                       ),
                       FilledButton(
                         onPressed: () async {
-                          final XFile? image = await picker.pickImage(
-                              source: ImageSource.camera);
+                          final XFile? image = await widget.picker
+                              .pickImage(source: ImageSource.camera);
                           if (image == null) return;
                           imageInFile = File(image.path);
                           final imageInBase64 =
@@ -237,7 +242,10 @@ class _HomePageState extends State<HomePage>
                     builder: (context, img, snapshot) {
                       return Visibility(
                         visible: img.isNotEmpty,
-                        child: Image.memory(img),
+                        child: Image.memory(
+                          img,
+                          key: const Key('image_photo'),
+                        ),
                       );
                     },
                   ),
