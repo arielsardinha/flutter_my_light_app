@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum StorageEnum {
-  data;
+  data,
+  host,
+  proprietario;
 }
 
 abstract interface class Storage {
