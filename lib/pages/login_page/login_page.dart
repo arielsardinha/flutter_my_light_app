@@ -52,6 +52,8 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   if (host.value.isEmpty)
+                    const Text('Peça ao responsável do APP o host do sistema'),
+                  if (host.value.isEmpty)
                     TextFormField(
                       controller: hostCtl,
                       decoration: const InputDecoration(

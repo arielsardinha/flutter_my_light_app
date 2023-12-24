@@ -15,7 +15,7 @@ final class RemoteGetCasa implements GetCasaUseCase {
   @override
   Future<CasaEntity> exec({required String nomeProprietario}) async {
     final responseModel = await _casaRepository
-        .getCasa(CasaModel(nomeProprietario: nomeProprietario));
+        .getCasa(ProprietarioModel(nomeProprietario: nomeProprietario));
     await _storage.save(
         key: StorageEnum.proprietario, value: responseModel.toJson());
     return CasaEntity(

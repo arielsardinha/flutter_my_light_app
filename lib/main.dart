@@ -7,6 +7,7 @@ import 'package:my_light_app/application/usecases/remote_get_leituras.dart';
 import 'package:my_light_app/blocs/leitura_bloc/leitura_bloc.dart';
 import 'package:my_light_app/infra/client_http/client_http_dio.dart';
 import 'package:my_light_app/infra/repositories/casa_repositories/casa_repository_impl.dart';
+import 'package:my_light_app/infra/repositories/leituras_repositories/leitura_repository_impl.dart';
 import 'package:my_light_app/infra/storage/storage.dart';
 import 'package:my_light_app/pages/home_page/home_page.dart';
 import 'package:my_light_app/pages/login_page/login_page.dart';
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final storage = StorageSharedPreferences();
+    final clientHttp = ClientHttpDio();
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
@@ -31,6 +33,9 @@ class MyApp extends StatelessWidget {
               picker: ImagePicker(),
               leituraBloc: LeituraBloc(
                 getLeiturasUseCase: RemoteGetLeituras(
+                  leituraRepository: LeituraRepositoryImpl(
+                    clientHttp: clientHttp,
+                  ),
                   storage: storage,
                 ),
                 deleteLeituraUseCase: RemoteDeleteLeitura(
@@ -46,7 +51,7 @@ class MyApp extends StatelessWidget {
               getCasaUseCase: RemoteGetCasa(
                 storage: storage,
                 casaRepository: CasaRepositoryImpl(
-                  clientHttp: ClientHttpDio(),
+                  clientHttp: clientHttp,
                 ),
               ),
             ),

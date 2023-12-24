@@ -1,7 +1,7 @@
-class CasaModel {
+class ProprietarioModel {
   final String nomeProprietario;
 
-  CasaModel({
+  ProprietarioModel({
     required this.nomeProprietario,
   });
 
@@ -10,22 +10,22 @@ class CasaModel {
       };
 }
 
-class CasaResponseModel extends CasaModel {
+class ProprietarioResponseModel extends ProprietarioModel {
   final String id;
-  CasaResponseModel({
+  ProprietarioResponseModel({
     required this.id,
     required super.nomeProprietario,
   });
 
-  factory CasaResponseModel.fromJson(Map<String, dynamic> json) =>
-      CasaResponseModel(
+  factory ProprietarioResponseModel.fromJson(Map<String, dynamic> json) =>
+      ProprietarioResponseModel(
         id: json["id"].toString(),
-        nomeProprietario: json["nomeProprietario"],
+        nomeProprietario: json["nome_proprietario"],
       );
 
   @override
   Map<String, dynamic> toJson() => {
-        "id": id,
+        "casaId": id,
         "nome_proprietario": nomeProprietario,
       };
 }
