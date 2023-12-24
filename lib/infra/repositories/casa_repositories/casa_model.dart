@@ -1,7 +1,9 @@
+import 'package:equatable/equatable.dart';
+
 class ProprietarioModel {
   final String nomeProprietario;
 
-  ProprietarioModel({
+  const ProprietarioModel({
     required this.nomeProprietario,
   });
 
@@ -12,7 +14,7 @@ class ProprietarioModel {
 
 class ProprietarioResponseModel extends ProprietarioModel {
   final String id;
-  ProprietarioResponseModel({
+  const ProprietarioResponseModel({
     required this.id,
     required super.nomeProprietario,
   });

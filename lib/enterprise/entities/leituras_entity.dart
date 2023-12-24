@@ -2,25 +2,19 @@ import 'package:my_light_app/enterprise/entities/leitura_entity.dart';
 
 class LeiturasEntity {
   final List<LeituraEntity> leituras;
-
-  LeiturasEntity({required this.leituras});
+  final int totalLeitura;
+  LeiturasEntity({this.leituras = const [], this.totalLeitura = 0});
 
   ({int valorTotalKwh, double valorTotal}) calcularFaturaTotal() {
-    double somaKwh = leituras.fold(
-        0,
-        (previousValue, element) =>
-            previousValue + int.parse(element.contador));
-
-    final valorTotalKwh = somaKwh.toInt();
-    final valorTotalFatura = _calcularValorTotalFatura(somaKwh);
+    final valorTotalFatura = _calcularValorTotalFatura(totalLeitura);
 
     return (
-      valorTotalKwh: valorTotalKwh,
+      valorTotalKwh: totalLeitura,
       valorTotal: valorTotalFatura,
     );
   }
 
-  double _calcularValorTotalFatura(double somaKwh) {
+  double _calcularValorTotalFatura(int somaKwh) {
     double valor = 0.0;
 
     if (somaKwh <= 30) {

@@ -2,5 +2,6 @@ import 'package:my_light_app/infra/repositories/casa_repositories/casa_model.dar
 import 'package:my_light_app/infra/repositories/leituras_repositories/leitura_model.dart';
 
 abstract interface class LeituraRepository {
-  Future<LeiturasModel> getAll({required ProprietarioResponseModel casa});
+  Future<LeiturasModel> getAll(
+      {required ProprietarioResponseModel proprietario});
 }

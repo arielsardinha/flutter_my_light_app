@@ -3,22 +3,32 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i5;
-import 'dart:io' as _i10;
+import 'dart:async' as _i6;
+import 'dart:io' as _i11;
 
-import 'package:image_picker/image_picker.dart' as _i11;
+import 'package:image_picker/image_picker.dart' as _i12;
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart'
     as _i3;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:my_light_app/enterprise/entities/leitura_entity.dart' as _i8;
+import 'package:mockito/src/dummies.dart' as _i16;
+import 'package:my_light_app/enterprise/entities/leitura_entity.dart' as _i9;
 import 'package:my_light_app/enterprise/entities/leituras_entity.dart' as _i2;
 import 'package:my_light_app/enterprise/usecases/create_leitura_usecase.dart'
-    as _i9;
+    as _i10;
 import 'package:my_light_app/enterprise/usecases/delete_leitura_usecase.dart'
-    as _i7;
+    as _i8;
 import 'package:my_light_app/enterprise/usecases/get_leituras_usecase.dart'
-    as _i6;
-import 'package:my_light_app/infra/storage/storage.dart' as _i4;
+    as _i7;
+import 'package:my_light_app/infra/adapter/request_adapter.dart' as _i15;
+import 'package:my_light_app/infra/adapter/response_adapter.dart' as _i14;
+import 'package:my_light_app/infra/client_http/client_http.dart' as _i13;
+import 'package:my_light_app/infra/repositories/casa_repositories/casa_model.dart'
+    as _i18;
+import 'package:my_light_app/infra/repositories/leituras_repositories/leitura_model.dart'
+    as _i4;
+import 'package:my_light_app/infra/repositories/leituras_repositories/leitura_repository.dart'
+    as _i17;
+import 'package:my_light_app/infra/storage/storage.dart' as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -55,13 +65,23 @@ class _FakeLostDataResponse_1 extends _i1.SmartFake
         );
 }
 
+class _FakeLeiturasModel_2 extends _i1.SmartFake implements _i4.LeiturasModel {
+  _FakeLeiturasModel_2(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [Storage].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockStorage extends _i1.Mock implements _i4.Storage {
+class MockStorage extends _i1.Mock implements _i5.Storage {
   @override
-  _i5.Future<void> save<T>({
-    required _i4.StorageEnum? key,
+  _i6.Future<void> save<T>({
+    required _i5.StorageEnum? key,
     required T? value,
   }) =>
       (super.noSuchMethod(
@@ -73,44 +93,44 @@ class MockStorage extends _i1.Mock implements _i4.Storage {
             #value: value,
           },
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 
   @override
-  _i5.Future<T?> get<T extends Object>(_i4.StorageEnum? key) =>
+  _i6.Future<T?> get<T extends Object>(_i5.StorageEnum? key) =>
       (super.noSuchMethod(
         Invocation.method(
           #get,
           [key],
         ),
-        returnValue: _i5.Future<T?>.value(),
-        returnValueForMissingStub: _i5.Future<T?>.value(),
-      ) as _i5.Future<T?>);
+        returnValue: _i6.Future<T?>.value(),
+        returnValueForMissingStub: _i6.Future<T?>.value(),
+      ) as _i6.Future<T?>);
 
   @override
-  _i5.Future<void> delete(_i4.StorageEnum? key) => (super.noSuchMethod(
+  _i6.Future<void> delete(_i5.StorageEnum? key) => (super.noSuchMethod(
         Invocation.method(
           #delete,
           [key],
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 }
 
 /// A class which mocks [GetLeiturasUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetLeiturasUseCase extends _i1.Mock
-    implements _i6.GetLeiturasUseCase {
+    implements _i7.GetLeiturasUseCase {
   @override
-  _i5.Future<_i2.LeiturasEntity> exec() => (super.noSuchMethod(
+  _i6.Future<_i2.LeiturasEntity> exec() => (super.noSuchMethod(
         Invocation.method(
           #exec,
           [],
         ),
-        returnValue: _i5.Future<_i2.LeiturasEntity>.value(_FakeLeiturasEntity_0(
+        returnValue: _i6.Future<_i2.LeiturasEntity>.value(_FakeLeiturasEntity_0(
           this,
           Invocation.method(
             #exec,
@@ -118,25 +138,25 @@ class MockGetLeiturasUseCase extends _i1.Mock
           ),
         )),
         returnValueForMissingStub:
-            _i5.Future<_i2.LeiturasEntity>.value(_FakeLeiturasEntity_0(
+            _i6.Future<_i2.LeiturasEntity>.value(_FakeLeiturasEntity_0(
           this,
           Invocation.method(
             #exec,
             [],
           ),
         )),
-      ) as _i5.Future<_i2.LeiturasEntity>);
+      ) as _i6.Future<_i2.LeiturasEntity>);
 }
 
 /// A class which mocks [DeleteLeituraUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockDeleteLeituraUseCase extends _i1.Mock
-    implements _i7.DeleteLeituraUseCase {
+    implements _i8.DeleteLeituraUseCase {
   @override
-  _i5.Future<void> exec({
+  _i6.Future<void> exec({
     required _i2.LeiturasEntity? leituras,
-    required _i8.LeituraEntity? leitura,
+    required _i9.LeituraEntity? leitura,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -147,20 +167,20 @@ class MockDeleteLeituraUseCase extends _i1.Mock
             #leitura: leitura,
           },
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 }
 
 /// A class which mocks [CreateLeituraUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockCreateLeituraUseCase extends _i1.Mock
-    implements _i9.CreateLeituraUseCase {
+    implements _i10.CreateLeituraUseCase {
   @override
-  _i5.Future<void> exec({
+  _i6.Future<void> exec({
     required _i2.LeiturasEntity? leituras,
-    required _i10.File? photo,
+    required _i11.File? photo,
     required String? contador,
   }) =>
       (super.noSuchMethod(
@@ -173,17 +193,17 @@ class MockCreateLeituraUseCase extends _i1.Mock
             #contador: contador,
           },
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 }
 
 /// A class which mocks [ImagePicker].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockImagePicker extends _i1.Mock implements _i11.ImagePicker {
+class MockImagePicker extends _i1.Mock implements _i12.ImagePicker {
   @override
-  _i5.Future<_i3.XFile?> pickImage({
+  _i6.Future<_i3.XFile?> pickImage({
     required _i3.ImageSource? source,
     double? maxWidth,
     double? maxHeight,
@@ -204,12 +224,12 @@ class MockImagePicker extends _i1.Mock implements _i11.ImagePicker {
             #requestFullMetadata: requestFullMetadata,
           },
         ),
-        returnValue: _i5.Future<_i3.XFile?>.value(),
-        returnValueForMissingStub: _i5.Future<_i3.XFile?>.value(),
-      ) as _i5.Future<_i3.XFile?>);
+        returnValue: _i6.Future<_i3.XFile?>.value(),
+        returnValueForMissingStub: _i6.Future<_i3.XFile?>.value(),
+      ) as _i6.Future<_i3.XFile?>);
 
   @override
-  _i5.Future<List<_i3.XFile>> pickMultiImage({
+  _i6.Future<List<_i3.XFile>> pickMultiImage({
     double? maxWidth,
     double? maxHeight,
     int? imageQuality,
@@ -226,13 +246,13 @@ class MockImagePicker extends _i1.Mock implements _i11.ImagePicker {
             #requestFullMetadata: requestFullMetadata,
           },
         ),
-        returnValue: _i5.Future<List<_i3.XFile>>.value(<_i3.XFile>[]),
+        returnValue: _i6.Future<List<_i3.XFile>>.value(<_i3.XFile>[]),
         returnValueForMissingStub:
-            _i5.Future<List<_i3.XFile>>.value(<_i3.XFile>[]),
-      ) as _i5.Future<List<_i3.XFile>>);
+            _i6.Future<List<_i3.XFile>>.value(<_i3.XFile>[]),
+      ) as _i6.Future<List<_i3.XFile>>);
 
   @override
-  _i5.Future<_i3.XFile?> pickMedia({
+  _i6.Future<_i3.XFile?> pickMedia({
     double? maxWidth,
     double? maxHeight,
     int? imageQuality,
@@ -249,12 +269,12 @@ class MockImagePicker extends _i1.Mock implements _i11.ImagePicker {
             #requestFullMetadata: requestFullMetadata,
           },
         ),
-        returnValue: _i5.Future<_i3.XFile?>.value(),
-        returnValueForMissingStub: _i5.Future<_i3.XFile?>.value(),
-      ) as _i5.Future<_i3.XFile?>);
+        returnValue: _i6.Future<_i3.XFile?>.value(),
+        returnValueForMissingStub: _i6.Future<_i3.XFile?>.value(),
+      ) as _i6.Future<_i3.XFile?>);
 
   @override
-  _i5.Future<List<_i3.XFile>> pickMultipleMedia({
+  _i6.Future<List<_i3.XFile>> pickMultipleMedia({
     double? maxWidth,
     double? maxHeight,
     int? imageQuality,
@@ -271,13 +291,13 @@ class MockImagePicker extends _i1.Mock implements _i11.ImagePicker {
             #requestFullMetadata: requestFullMetadata,
           },
         ),
-        returnValue: _i5.Future<List<_i3.XFile>>.value(<_i3.XFile>[]),
+        returnValue: _i6.Future<List<_i3.XFile>>.value(<_i3.XFile>[]),
         returnValueForMissingStub:
-            _i5.Future<List<_i3.XFile>>.value(<_i3.XFile>[]),
-      ) as _i5.Future<List<_i3.XFile>>);
+            _i6.Future<List<_i3.XFile>>.value(<_i3.XFile>[]),
+      ) as _i6.Future<List<_i3.XFile>>);
 
   @override
-  _i5.Future<_i3.XFile?> pickVideo({
+  _i6.Future<_i3.XFile?> pickVideo({
     required _i3.ImageSource? source,
     _i3.CameraDevice? preferredCameraDevice = _i3.CameraDevice.rear,
     Duration? maxDuration,
@@ -292,18 +312,18 @@ class MockImagePicker extends _i1.Mock implements _i11.ImagePicker {
             #maxDuration: maxDuration,
           },
         ),
-        returnValue: _i5.Future<_i3.XFile?>.value(),
-        returnValueForMissingStub: _i5.Future<_i3.XFile?>.value(),
-      ) as _i5.Future<_i3.XFile?>);
+        returnValue: _i6.Future<_i3.XFile?>.value(),
+        returnValueForMissingStub: _i6.Future<_i3.XFile?>.value(),
+      ) as _i6.Future<_i3.XFile?>);
 
   @override
-  _i5.Future<_i3.LostDataResponse> retrieveLostData() => (super.noSuchMethod(
+  _i6.Future<_i3.LostDataResponse> retrieveLostData() => (super.noSuchMethod(
         Invocation.method(
           #retrieveLostData,
           [],
         ),
         returnValue:
-            _i5.Future<_i3.LostDataResponse>.value(_FakeLostDataResponse_1(
+            _i6.Future<_i3.LostDataResponse>.value(_FakeLostDataResponse_1(
           this,
           Invocation.method(
             #retrieveLostData,
@@ -311,14 +331,14 @@ class MockImagePicker extends _i1.Mock implements _i11.ImagePicker {
           ),
         )),
         returnValueForMissingStub:
-            _i5.Future<_i3.LostDataResponse>.value(_FakeLostDataResponse_1(
+            _i6.Future<_i3.LostDataResponse>.value(_FakeLostDataResponse_1(
           this,
           Invocation.method(
             #retrieveLostData,
             [],
           ),
         )),
-      ) as _i5.Future<_i3.LostDataResponse>);
+      ) as _i6.Future<_i3.LostDataResponse>);
 
   @override
   bool supportsImageSource(_i3.ImageSource? source) => (super.noSuchMethod(
@@ -329,4 +349,117 @@ class MockImagePicker extends _i1.Mock implements _i11.ImagePicker {
         returnValue: false,
         returnValueForMissingStub: false,
       ) as bool);
+}
+
+/// A class which mocks [ClientHttp].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockClientHttp extends _i1.Mock implements _i13.ClientHttp {
+  @override
+  _i6.Future<_i14.Response<T>> get<T>(_i15.Request? request) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #get,
+          [request],
+        ),
+        returnValue: _i6.Future<_i14.Response<T>>.value(
+            _i16.dummyValue<_i14.Response<T>>(
+          this,
+          Invocation.method(
+            #get,
+            [request],
+          ),
+        )),
+        returnValueForMissingStub: _i6.Future<_i14.Response<T>>.value(
+            _i16.dummyValue<_i14.Response<T>>(
+          this,
+          Invocation.method(
+            #get,
+            [request],
+          ),
+        )),
+      ) as _i6.Future<_i14.Response<T>>);
+
+  @override
+  _i6.Future<_i14.Response<T>> post<T>(_i15.Request? request) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #post,
+          [request],
+        ),
+        returnValue: _i6.Future<_i14.Response<T>>.value(
+            _i16.dummyValue<_i14.Response<T>>(
+          this,
+          Invocation.method(
+            #post,
+            [request],
+          ),
+        )),
+        returnValueForMissingStub: _i6.Future<_i14.Response<T>>.value(
+            _i16.dummyValue<_i14.Response<T>>(
+          this,
+          Invocation.method(
+            #post,
+            [request],
+          ),
+        )),
+      ) as _i6.Future<_i14.Response<T>>);
+
+  @override
+  _i6.Future<_i14.Response<T>> delete<T>(_i15.Request? request) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #delete,
+          [request],
+        ),
+        returnValue: _i6.Future<_i14.Response<T>>.value(
+            _i16.dummyValue<_i14.Response<T>>(
+          this,
+          Invocation.method(
+            #delete,
+            [request],
+          ),
+        )),
+        returnValueForMissingStub: _i6.Future<_i14.Response<T>>.value(
+            _i16.dummyValue<_i14.Response<T>>(
+          this,
+          Invocation.method(
+            #delete,
+            [request],
+          ),
+        )),
+      ) as _i6.Future<_i14.Response<T>>);
+}
+
+/// A class which mocks [LeituraRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockLeituraRepository extends _i1.Mock implements _i17.LeituraRepository {
+  @override
+  _i6.Future<_i4.LeiturasModel> getAll(
+          {required _i18.ProprietarioResponseModel? proprietario}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAll,
+          [],
+          {#proprietario: proprietario},
+        ),
+        returnValue: _i6.Future<_i4.LeiturasModel>.value(_FakeLeiturasModel_2(
+          this,
+          Invocation.method(
+            #getAll,
+            [],
+            {#proprietario: proprietario},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i6.Future<_i4.LeiturasModel>.value(_FakeLeiturasModel_2(
+          this,
+          Invocation.method(
+            #getAll,
+            [],
+            {#proprietario: proprietario},
+          ),
+        )),
+      ) as _i6.Future<_i4.LeiturasModel>);
 }

@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage>
   final valorTotal = ValueNotifier(0.0);
   final valorTotalKwh = ValueNotifier(0);
 
-  LeiturasEntity leituras = LeiturasEntity(leituras: []);
+  LeiturasEntity leituras = LeiturasEntity();
   Future<void> saveData() async {
     final isValid = formKey.currentState?.validate() ?? false;
 
@@ -370,10 +370,8 @@ class _HomePageState extends State<HomePage>
                                                                 .circular(16),
                                                         image: DecorationImage(
                                                           fit: BoxFit.cover,
-                                                          image: MemoryImage(
-                                                            extractDecodeBitAndConvertToUint8List(
-                                                              leitura.photo,
-                                                            ),
+                                                          image: NetworkImage(
+                                                            leitura.photo,
                                                           ),
                                                         ),
                                                       ),

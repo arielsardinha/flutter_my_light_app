@@ -13,14 +13,17 @@ final class LeituraRepositoryImpl implements LeituraRepository {
 
   @override
   Future<LeiturasModel> getAll(
-      {required ProprietarioResponseModel casa}) async {
+      {required ProprietarioResponseModel proprietario}) async {
     try {
-      final response = await _clientHttp.get(Request(
+      final request = Request(
         '/leituras',
-        body: casa.toJson(),
-      ));
-
-      return LeiturasModel.fromJson(response.data);
+        body: proprietario.toJson(),
+      );
+      final response = await _clientHttp.get<Map<String, dynamic>>(request);
+      if (response.data == null) {
+        throw HttpError(request: request, response: response);
+      }
+      return LeiturasModel.fromJson(response.data!);
     } on HttpError catch (_) {
       rethrow;
     }

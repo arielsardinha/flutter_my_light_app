@@ -10,6 +10,10 @@ import 'package:my_light_app/blocs/leitura_bloc/leitura_bloc.dart';
 import 'package:my_light_app/enterprise/usecases/create_leitura_usecase.dart';
 import 'package:my_light_app/enterprise/usecases/delete_leitura_usecase.dart';
 import 'package:my_light_app/enterprise/usecases/get_leituras_usecase.dart';
+import 'package:my_light_app/infra/adapter/response_adapter.dart';
+import 'package:my_light_app/infra/client_http/client_http.dart';
+import 'package:my_light_app/infra/repositories/leituras_repositories/leitura_repository.dart';
+import 'package:my_light_app/infra/repositories/leituras_repositories/leitura_repository_impl.dart';
 import 'package:my_light_app/infra/storage/storage.dart';
 import 'package:my_light_app/pages/home_page/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,14 +28,20 @@ void main() {
   late DeleteLeituraUseCase deleteLeituraUseCase;
   late CreateLeituraUseCase createLeituraUseCase;
   late File file;
+  late LeituraRepository leituraRepository;
+  late ClientHttp clientHttp;
   setUpAll(() {
     file = File('temp_image.png');
-
+    clientHttp = MockClientHttp();
+    leituraRepository = LeituraRepositoryImpl(
+      clientHttp: clientHttp,
+    );
     storage = StorageSharedPreferences();
     deleteLeituraUseCase = RemoteDeleteLeitura(
       storage: storage,
     );
     getLeiturasUseCase = RemoteGetLeituras(
+      leituraRepository: leituraRepository,
       storage: storage,
     );
     createLeituraUseCase = RemoteCreateLeitura(
@@ -52,6 +62,27 @@ void main() {
   });
 
   testWidgets('Deve carregar inicial tela', (tester) async {
+    await storage.save(
+        key: StorageEnum.proprietario,
+        value: {"id": 2, "nome_proprietario": "ADRIANA"});
+
+    provideDummy<Response<Map<String, dynamic>>>(Response(
+      data: {
+        "leituras": [
+          {
+            "createAt": "2023-12-23T23:24:54.000Z",
+            "id": 3,
+            "contador": 400,
+            "photo": null
+          }
+        ],
+        "totalContador": 600,
+        "totalContadorPorDaCasa": 400,
+        "casaId": 2
+      },
+      status: 200,
+    ));
+
     await tester.pumpWidget(
       MaterialApp(
         home: HomePage(

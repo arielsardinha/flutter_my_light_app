@@ -19,9 +19,10 @@ final class RemoteGetLeituras implements GetLeiturasUseCase {
     final proprietarioModel = ProprietarioResponseModel.fromJson(proprietario!);
 
     final leiturasModel =
-        await _leituraRepository.getAll(casa: proprietarioModel);
+        await _leituraRepository.getAll(proprietario: proprietarioModel);
 
     return LeiturasEntity(
+      totalLeitura: leiturasModel.totalContadorPorDaCasa,
       leituras: leiturasModel.leituras
           .map(
             (e) => LeituraEntity(
