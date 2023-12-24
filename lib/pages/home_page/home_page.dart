@@ -115,24 +115,26 @@ class _HomePageState extends State<HomePage>
       },
       child: Scaffold(
         appBar: AppBar(
+          title: const Text('Registre sua energia elétrica'),
           actions: [
             ValueListenableBuilder(
-                valueListenable: isADM,
-                builder: (context, isADM, snapshot) {
-                  if (isADM) {
-                    return IconButton(
-                      onPressed: () {
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          "/config",
-                          (route) => false,
-                        );
-                      },
-                      icon: const Icon(Icons.settings),
-                    );
-                  }
-                  return const SizedBox();
-                })
+              valueListenable: isADM,
+              builder: (context, isADM, snapshot) {
+                if (isADM) {
+                  return IconButton(
+                    onPressed: () {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        "/config",
+                        (route) => false,
+                      );
+                    },
+                    icon: const Icon(Icons.settings),
+                  );
+                }
+                return const SizedBox();
+              },
+            )
           ],
         ),
         body: SafeArea(
@@ -164,11 +166,6 @@ class _HomePageState extends State<HomePage>
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Registre sua energia elétrica',
-                              key: const Key('title'),
-                              style: textTheme.titleMedium,
-                            ),
                             Text(
                               'Valor Total: ${formatCurrencyEuro(valorTotal.value)}',
                               key: const Key('valor_total'),
