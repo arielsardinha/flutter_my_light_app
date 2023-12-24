@@ -8,6 +8,7 @@ import 'package:my_light_app/blocs/leitura_bloc/leitura_event.dart';
 import 'package:my_light_app/blocs/leitura_bloc/leitura_state.dart';
 import 'package:my_light_app/enterprise/entities/leitura_entity.dart';
 import 'package:my_light_app/enterprise/entities/leituras_entity.dart';
+import 'package:my_light_app/infra/repositories/casa_repositories/casa_model.dart';
 import 'package:my_light_app/infra/storage/storage.dart';
 import 'package:my_light_app/utils/mixins/convert_currency.dart';
 import 'package:my_light_app/utils/mixins/convert_file.dart';
@@ -33,6 +34,7 @@ class _HomePageState extends State<HomePage>
     with FormatFileMixin, FormatCurrencyMixin, DateFormatMixin {
   final controller = TextEditingController();
   final formKey = GlobalKey<FormState>();
+  final isADM = ValueNotifier(false);
   late final size = MediaQuery.sizeOf(context);
   late final textTheme = Theme.of(context).textTheme;
 
@@ -93,7 +95,13 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     widget.leituraBloc.add(LeituraEventGetLeituras());
-
+    widget.storage
+        .get<Map<String, dynamic>>(StorageEnum.proprietario)
+        .then((value) {
+      final ProprietarioResponseModel proprietario =
+          ProprietarioResponseModel.fromJson(value!);
+      isADM.value = proprietario.nivelAcesso == "ADM";
+    });
     super.initState();
   }
 
@@ -106,6 +114,27 @@ class _HomePageState extends State<HomePage>
         widget.leituraBloc.add(LeituraEventGetLeituras());
       },
       child: Scaffold(
+        appBar: AppBar(
+          actions: [
+            ValueListenableBuilder(
+                valueListenable: isADM,
+                builder: (context, isADM, snapshot) {
+                  if (isADM) {
+                    return IconButton(
+                      onPressed: () {
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          "/config",
+                          (route) => false,
+                        );
+                      },
+                      icon: const Icon(Icons.settings),
+                    );
+                  }
+                  return const SizedBox();
+                })
+          ],
+        ),
         body: SafeArea(
           child: BlocListener<LeituraBloc, LeituraState>(
             bloc: widget.leituraBloc,

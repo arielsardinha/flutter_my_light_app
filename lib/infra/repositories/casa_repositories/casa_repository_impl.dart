@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:my_light_app/infra/adapter/http_erro.dart';
 import 'package:my_light_app/infra/adapter/request_adapter.dart';
 import 'package:my_light_app/infra/client_http/client_http.dart';
@@ -20,6 +22,23 @@ final class CasaRepositoryImpl implements CasaRepository {
       }
       return ProprietarioResponseModel.fromJson(response.data!);
     } on HttpError catch (_) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<ProprietarioResponseModel>> getCasas() async {
+    try {
+      final request = Request("/casas");
+      final response = await _clientHttp.get(request);
+      if (response.data == null) {
+        throw HttpError(request: request, response: response);
+      }
+      final model = response.data!.map<ProprietarioResponseModel>(
+          (e) => ProprietarioResponseModel.fromJson(e));
+      return model.toList();
+    } on HttpError catch (e) {
+      log(e.toString());
       rethrow;
     }
   }

@@ -1,5 +1,3 @@
-import 'package:equatable/equatable.dart';
-
 class ProprietarioModel {
   final String nomeProprietario;
 
@@ -8,26 +6,31 @@ class ProprietarioModel {
   });
 
   Map<String, dynamic> toJson() => {
-        "nome_proprietario": nomeProprietario,
+        "nomeProprietario": nomeProprietario,
       };
 }
 
-class ProprietarioResponseModel extends ProprietarioModel {
+class ProprietarioResponseModel {
   final String id;
-  const ProprietarioResponseModel({
+  final String nivelAcesso;
+  final String nomeProprietario;
+
+  ProprietarioResponseModel({
     required this.id,
-    required super.nomeProprietario,
+    required this.nivelAcesso,
+    required this.nomeProprietario,
   });
 
   factory ProprietarioResponseModel.fromJson(Map<String, dynamic> json) =>
       ProprietarioResponseModel(
-        id: json["id"].toString(),
-        nomeProprietario: json["nome_proprietario"],
+        id: json["id"]?.toString() ?? json['casaId'].toString(),
+        nivelAcesso: json["nivelAcesso"],
+        nomeProprietario: json["nomeProprietario"],
       );
 
-  @override
   Map<String, dynamic> toJson() => {
         "casaId": id,
-        "nome_proprietario": nomeProprietario,
+        "nivelAcesso": nivelAcesso,
+        "nomeProprietario": nomeProprietario,
       };
 }

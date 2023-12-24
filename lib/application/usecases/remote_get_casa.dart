@@ -19,6 +19,9 @@ final class RemoteGetCasa implements GetCasaUseCase {
     await _storage.save(
         key: StorageEnum.proprietario, value: responseModel.toJson());
     return CasaEntity(
-        id: responseModel.id, proprietario: responseModel.nomeProprietario);
+      nivelDeAcesso: CasaNivelDeAcessoEnum.fromJson(responseModel.nivelAcesso),
+      id: responseModel.id,
+      proprietario: responseModel.nomeProprietario,
+    );
   }
 }
