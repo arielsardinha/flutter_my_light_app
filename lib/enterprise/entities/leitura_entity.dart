@@ -1,5 +1,6 @@
 class LeituraEntity {
-  final String contador, photo;
+  final String contador;
+  final String? photo;
   final int dataInMilisegundos;
 
   LeituraEntity({

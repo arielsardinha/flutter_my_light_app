@@ -27,7 +27,7 @@ class LeituraModel {
   final DateTime createAt;
   final String id;
   final int contador;
-  final dynamic photo;
+  final String? photo;
 
   LeituraModel({
     required this.createAt,

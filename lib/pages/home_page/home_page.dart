@@ -369,18 +369,23 @@ class _HomePageState extends State<HomePage>
                                                                     BorderRadius
                                                                         .circular(
                                                                             24),
-                                                                image:
-                                                                    DecorationImage(
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                  image:
-                                                                      MemoryImage(
-                                                                    extractDecodeBitAndConvertToUint8List(
-                                                                      leitura
-                                                                          .photo,
-                                                                    ),
-                                                                  ),
-                                                                ),
+                                                                image: leitura.photo ==
+                                                                            null ||
+                                                                        leitura
+                                                                            .photo!
+                                                                            .isEmpty
+                                                                    ? null
+                                                                    : DecorationImage(
+                                                                        fit: BoxFit
+                                                                            .cover,
+                                                                        image:
+                                                                            MemoryImage(
+                                                                          extractDecodeBitAndConvertToUint8List(
+                                                                            leitura.photo ??
+                                                                                '',
+                                                                          ),
+                                                                        ),
+                                                                      ),
                                                               ),
                                                             ),
                                                           );
@@ -394,12 +399,22 @@ class _HomePageState extends State<HomePage>
                                                         borderRadius:
                                                             BorderRadius
                                                                 .circular(16),
-                                                        image: DecorationImage(
-                                                          fit: BoxFit.cover,
-                                                          image: NetworkImage(
-                                                            leitura.photo,
-                                                          ),
-                                                        ),
+                                                        image: leitura.photo ==
+                                                                    null ||
+                                                                leitura.photo!
+                                                                    .isEmpty
+                                                            ? null
+                                                            : DecorationImage(
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                                image:
+                                                                    MemoryImage(
+                                                                  extractDecodeBitAndConvertToUint8List(
+                                                                    leitura.photo ??
+                                                                        '',
+                                                                  ),
+                                                                ),
+                                                              ),
                                                       ),
                                                     ),
                                                   ),
