@@ -1,46 +1,38 @@
 import 'dart:io';
 import 'package:my_light_app/enterprise/entities/leituras_entity.dart';
 import 'package:my_light_app/enterprise/usecases/create_leitura_usecase.dart';
+import 'package:my_light_app/infra/repositories/casa_repositories/casa_model.dart';
+import 'package:my_light_app/infra/repositories/leituras_repositories/leitura_model.dart';
+import 'package:my_light_app/infra/repositories/leituras_repositories/leitura_repository.dart';
 import 'package:my_light_app/infra/storage/storage.dart';
-import 'package:my_light_app/models/leitura_model.dart';
 import 'package:my_light_app/utils/mixins/convert_file.dart';
 
 class RemoteCreateLeitura with FormatFileMixin implements CreateLeituraUseCase {
   final Storage _storage;
-  RemoteCreateLeitura({required Storage storage}) : _storage = storage;
+  final LeituraRepository _leituraRepository;
+  RemoteCreateLeitura(
+      {required Storage storage, required LeituraRepository leituraRepository})
+      : _storage = storage,
+        _leituraRepository = leituraRepository;
   @override
   Future<void> exec({
     required LeiturasEntity leituras,
     required File photo,
-    required String contador,
+    required int contador,
   }) async {
-    if (contador.isEmpty || photo.path.isEmpty) {
+    if (photo.path.isEmpty) {
       throw Exception('Campos obrigatórios não preenchidos');
     }
-    await _storage.delete(StorageEnum.data);
+    final data =
+        await _storage.get<Map<String, dynamic>>(StorageEnum.proprietario);
 
-    final leitura = LeituraModel(
+    final proprietarioModel = ProprietarioResponseModel.fromJson(data!);
+
+    final newLeitura = LeituraCreateParamns(
+      casaId: proprietarioModel.id,
       contador: contador,
-      dataInMilisegundos: DateTime.now().millisecondsSinceEpoch,
-      photo: convertImageFileToBase64String(photo),
+      photo: photo,
     );
-
-    final leiturasModel = leituras.leituras.map((leitura) {
-      return LeituraModel(
-        contador: leitura.contador,
-        dataInMilisegundos: leitura.dataInMilisegundos,
-        photo: leitura.photo,
-      ).toJson();
-    }).toList();
-
-    final newLeituras = [
-      ...leiturasModel,
-      leitura.toJson(),
-    ];
-
-    await _storage.save<List>(
-      key: StorageEnum.data,
-      value: newLeituras,
-    );
+    await _leituraRepository.create(newLeitura: newLeitura);
   }
 }

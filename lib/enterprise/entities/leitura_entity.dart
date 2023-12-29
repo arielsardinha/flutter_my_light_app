@@ -1,5 +1,6 @@
 class LeituraEntity {
-  final String contador;
+  final String id;
+  final int contador;
   final String? photo;
   final int dataInMilisegundos;
 
@@ -7,6 +8,7 @@ class LeituraEntity {
     required this.contador,
     required this.dataInMilisegundos,
     required this.photo,
+    required this.id,
   });
 
   double calcularValorKWH({
@@ -16,8 +18,7 @@ class LeituraEntity {
       return 0.0;
     }
 
-    final int diferencaKwh =
-        int.parse(contador) - int.parse(leituraAnterior.contador);
+    final int diferencaKwh = contador - leituraAnterior.contador;
     return diferencaKwh.toDouble();
   }
 }

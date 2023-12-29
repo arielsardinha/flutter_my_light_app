@@ -17,7 +17,7 @@ class LeituraEventDeleteLeitura extends LeituraEvent {
 class LeituraEventCreateLeitura extends LeituraEvent {
   final LeiturasEntity leituras;
   final File photo;
-  final String contador;
+  final int contador;
 
   LeituraEventCreateLeitura({
     required this.contador,

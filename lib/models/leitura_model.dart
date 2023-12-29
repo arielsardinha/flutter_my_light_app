@@ -1,5 +1,5 @@
 class LeituraModel {
-  final String contador;
+  final int contador;
   final String? photo;
   final int dataInMilisegundos;
 

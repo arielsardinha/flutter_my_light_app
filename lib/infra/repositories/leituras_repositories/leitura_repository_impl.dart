@@ -28,4 +28,31 @@ final class LeituraRepositoryImpl implements LeituraRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<void> delete({
+    required LeituraModel leitura,
+    required ProprietarioResponseModel proprietario,
+  }) async {
+    try {
+      await _clientHttp.delete(Request('/leitura',
+          body: {...leitura.toJson(), "casaId": proprietario.id}));
+    } on HttpError catch (_) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<LeituraModel> create(
+      {required LeituraCreateParamns newLeitura}) async {
+    try {
+      final response = await _clientHttp.post<Map<String, dynamic>>(Request(
+        '/leitura',
+        body: await newLeitura.getFormData(),
+      ));
+      return LeituraModel.fromJson(response.data!['leitura']);
+    } on HttpError catch (_) {
+      rethrow;
+    }
+  }
 }

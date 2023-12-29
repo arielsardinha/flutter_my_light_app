@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
     final casaRepository = CasaRepositoryImpl(
       clientHttp: clientHttp,
     );
+    final leituraRepository = LeituraRepositoryImpl(clientHttp: clientHttp);
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
@@ -38,16 +39,16 @@ class MyApp extends StatelessWidget {
               picker: ImagePicker(),
               leituraBloc: LeituraBloc(
                 getLeiturasUseCase: RemoteGetLeituras(
-                  leituraRepository: LeituraRepositoryImpl(
-                    clientHttp: clientHttp,
-                  ),
+                  leituraRepository: leituraRepository,
                   storage: storage,
                 ),
                 deleteLeituraUseCase: RemoteDeleteLeitura(
+                  leituraRepository: leituraRepository,
                   storage: storage,
                 ),
                 createLeituraUseCase: RemoteCreateLeitura(
                   storage: storage,
+                  leituraRepository: leituraRepository,
                 ),
               ),
             ),

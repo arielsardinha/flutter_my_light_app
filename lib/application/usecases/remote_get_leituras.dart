@@ -26,8 +26,9 @@ final class RemoteGetLeituras implements GetLeiturasUseCase {
       leituras: leiturasModel.leituras
           .map(
             (e) => LeituraEntity(
-              contador: e.contador.toString(),
+              contador: e.contador,
               dataInMilisegundos: e.createAt.millisecondsSinceEpoch,
+              id: e.id,
               photo: e.photo ?? '',
             ),
           )

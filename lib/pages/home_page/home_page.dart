@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage>
 
     widget.leituraBloc.add(
       LeituraEventCreateLeitura(
-        contador: controller.text,
+        contador: int.parse(controller.text),
         leituras: leituras,
         photo: imageInFile!,
       ),
@@ -378,13 +378,8 @@ class _HomePageState extends State<HomePage>
                                                                     : DecorationImage(
                                                                         fit: BoxFit
                                                                             .cover,
-                                                                        image:
-                                                                            MemoryImage(
-                                                                          extractDecodeBitAndConvertToUint8List(
-                                                                            leitura.photo ??
-                                                                                '',
-                                                                          ),
-                                                                        ),
+                                                                        image: NetworkImage(
+                                                                            leitura.photo!),
                                                                       ),
                                                               ),
                                                             ),
@@ -407,13 +402,9 @@ class _HomePageState extends State<HomePage>
                                                             : DecorationImage(
                                                                 fit: BoxFit
                                                                     .cover,
-                                                                image:
-                                                                    MemoryImage(
-                                                                  extractDecodeBitAndConvertToUint8List(
-                                                                    leitura.photo ??
-                                                                        '',
-                                                                  ),
-                                                                ),
+                                                                image: NetworkImage(
+                                                                    leitura
+                                                                        .photo!),
                                                               ),
                                                       ),
                                                     ),

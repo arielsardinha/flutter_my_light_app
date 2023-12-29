@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+
 class LeiturasModel {
   final List<LeituraModel> leituras;
   final int totalContadorPorDaCasa;
@@ -49,4 +53,28 @@ class LeituraModel {
         "contador": contador,
         "photo": photo,
       };
+}
+
+class LeituraCreateParamns {
+  final int contador;
+  final File? photo;
+  final String casaId;
+
+  LeituraCreateParamns(
+      {required this.casaId, required this.contador, required this.photo});
+
+  Map<String, dynamic> toJson() => {
+        "casaId": casaId,
+        "contador": contador,
+        "photo": photo,
+      };
+
+  Future<FormData> getFormData() async {
+    final data = FormData.fromMap({
+      "casaId": casaId,
+      "contador": contador,
+      if (photo != null) "photo": await MultipartFile.fromFile(photo!.path),
+    });
+    return data;
+  }
 }
