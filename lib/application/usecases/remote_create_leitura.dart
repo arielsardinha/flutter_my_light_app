@@ -17,12 +17,9 @@ class RemoteCreateLeitura with FormatFileMixin implements CreateLeituraUseCase {
   @override
   Future<void> exec({
     required LeiturasEntity leituras,
-    required File photo,
+    required File? photo,
     required int contador,
   }) async {
-    if (photo.path.isEmpty) {
-      throw Exception('Campos obrigatórios não preenchidos');
-    }
     final data =
         await _storage.get<Map<String, dynamic>>(StorageEnum.proprietario);
 

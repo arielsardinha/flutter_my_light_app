@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_light_app/blocs/leitura_bloc/leitura_event.dart';
 import 'package:my_light_app/blocs/leitura_bloc/leitura_state.dart';
@@ -20,7 +22,12 @@ class LeituraBloc extends Bloc<LeituraEvent, LeituraState> {
         super(LeituraStateInitial()) {
     on<LeituraEventGetLeituras>((event, emit) async {
       emit(LeituraStateLoading());
-      final leituras = await _getLeiturasUseCase.exec();
+      log("start: ${event.startDate?.toIso8601String()} final: ${event.endDate?.toIso8601String()}");
+
+      final leituras = await _getLeiturasUseCase.exec(
+        endDate: event.endDate,
+        startDate: event.startDate,
+      );
       emit(LeituraStateLoaded(leituras: leituras));
     });
 
@@ -30,7 +37,7 @@ class LeituraBloc extends Bloc<LeituraEvent, LeituraState> {
         leituras: event.leituras,
         leitura: event.leitura,
       );
-      add(LeituraEventGetLeituras());
+      event.onLoaded();
     });
 
     on<LeituraEventCreateLeitura>((event, emit) async {
@@ -40,7 +47,7 @@ class LeituraBloc extends Bloc<LeituraEvent, LeituraState> {
         photo: event.photo,
         contador: event.contador,
       );
-      add(LeituraEventGetLeituras());
+      event.onLoaded();
     });
   }
 }

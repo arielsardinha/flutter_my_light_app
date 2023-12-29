@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
@@ -14,6 +15,107 @@ import 'package:my_light_app/utils/mixins/convert_currency.dart';
 import 'package:my_light_app/utils/mixins/convert_file.dart';
 import 'package:my_light_app/utils/mixins/date_formate.dart';
 import 'package:validatorless/validatorless.dart';
+
+class DateFilterWidget extends StatefulWidget with DateFormatMixin {
+  final void Function(({DateTime? startDate, DateTime endDate})) onChange;
+  const DateFilterWidget({super.key, required this.onChange});
+
+  @override
+  State<DateFilterWidget> createState() => _DateFilterWidgetState();
+}
+
+class _DateFilterWidgetState extends State<DateFilterWidget> {
+  late DateTime startDate;
+
+  late DateTime endDate;
+  @override
+  void initState() {
+    startDate = DateTime.now().subtract(const Duration(days: 30));
+    endDate = DateTime.now();
+    super.initState();
+  }
+
+  Future<void> _selectDate(BuildContext context, bool isStart) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: isStart ? startDate : endDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != (isStart ? startDate : endDate)) {
+      setState(() {
+        if (isStart) {
+          startDate = picked;
+        } else {
+          endDate = picked;
+        }
+      });
+      widget.onChange((startDate: startDate, endDate: endDate));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Selecione o Período de Data',
+          style: theme.textTheme.labelMedium,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            GestureDetector(
+              onTap: () => _selectDate(context, true),
+              child: Chip(
+                onDeleted: startDate.day !=
+                        DateTime.now().subtract(const Duration(days: 30)).day
+                    ? () {
+                        setState(() {
+                          startDate =
+                              DateTime.now().subtract(const Duration(days: 30));
+                        });
+                        widget
+                            .onChange((startDate: startDate, endDate: endDate));
+                      }
+                    : null,
+                labelStyle: theme.textTheme.bodySmall,
+                visualDensity: VisualDensity.compact,
+                label: Text(
+                  'Início: ${widget.dateFormatDateTimeInStringFullTime(startDate).split('-')[0].trim()}',
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 16,
+            ),
+            GestureDetector(
+              onTap: () => _selectDate(context, false),
+              child: Chip(
+                onDeleted: endDate.day != DateTime.now().day
+                    ? () {
+                        setState(() {
+                          endDate = DateTime.now();
+                        });
+                        widget
+                            .onChange((startDate: startDate, endDate: endDate));
+                      }
+                    : null,
+                labelStyle: theme.textTheme.bodySmall,
+                visualDensity: VisualDensity.compact,
+                label: Text(
+                  'Fim: ${widget.dateFormatDateTimeInStringFullTime(endDate).split('-')[0].trim()}',
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
 
 class HomePage extends StatefulWidget {
   final Storage storage;
@@ -47,17 +149,15 @@ class _HomePageState extends State<HomePage>
   Future<void> saveData() async {
     final isValid = formKey.currentState?.validate() ?? false;
 
-    if (imageInFile == null || !isValid) {
-      if (imageInFile == null && isValid) {
-        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-          const SnackBar(
-            backgroundColor: Colors.red,
-            content: Text(
-              'A imagem é um campo obrigatório',
-            ),
+    if (!isValid) {
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            'A imagem é um campo obrigatório',
           ),
-        );
-      }
+        ),
+      );
       return;
     }
 
@@ -65,7 +165,8 @@ class _HomePageState extends State<HomePage>
       LeituraEventCreateLeitura(
         contador: int.parse(controller.text),
         leituras: leituras,
-        photo: imageInFile!,
+        photo: imageInFile,
+        onLoaded: getLeituras,
       ),
     );
 
@@ -88,13 +189,14 @@ class _HomePageState extends State<HomePage>
     required LeituraEntity leitura,
   }) async {
     widget.leituraBloc.add(
-      LeituraEventDeleteLeitura(leitura: leitura, leituras: leituras),
+      LeituraEventDeleteLeitura(
+          leitura: leitura, leituras: leituras, onLoaded: getLeituras),
     );
   }
 
   @override
   void initState() {
-    widget.leituraBloc.add(LeituraEventGetLeituras());
+    getLeituras();
     widget.storage
         .get<Map<String, dynamic>>(StorageEnum.proprietario)
         .then((value) {
@@ -105,13 +207,21 @@ class _HomePageState extends State<HomePage>
     super.initState();
   }
 
+  Future<void> getLeituras() async {
+    final startDate = DateTime.now().subtract(const Duration(days: 30));
+
+    final endDate = DateTime.now();
+    widget.leituraBloc
+        .add(LeituraEventGetLeituras(endDate: endDate, startDate: startDate));
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return RefreshIndicator(
       onRefresh: () async {
-        widget.leituraBloc.add(LeituraEventGetLeituras());
+        getLeituras();
       },
       child: Scaffold(
         appBar: AppBar(
@@ -155,312 +265,351 @@ class _HomePageState extends State<HomePage>
             },
             child: Form(
               key: formKey,
-              child: ListView(
+              child: Padding(
                 padding: const EdgeInsets.all(16),
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: AnimatedBuilder(
-                      animation: Listenable.merge([valorTotal, valorTotalKwh]),
-                      builder: (context, snapshot) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Valor Total: ${formatCurrencyEuro(valorTotal.value)}',
-                              key: const Key('valor_total'),
-                              style: textTheme.labelMedium,
-                            ),
-                            Text(
-                              'Total Kwh: ${valorTotalKwh.value}',
-                              key: const Key('valor_total_kwh'),
-                              style: textTheme.labelMedium,
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                  TextFormField(
-                    controller: controller,
-                    keyboardType: TextInputType.number,
-                    validator: Validatorless.required('Campo obrigatório'),
-                    decoration: const InputDecoration(
-                      isDense: true,
-                      border: OutlineInputBorder(),
-                      label: Text('valor total de kwh'),
-                      hintText: 'Adicione o valor total de kwh do relógio',
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 24,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                child: SingleChildScrollView(
+                  child: Column(
                     children: [
-                      ElevatedButton(
-                        onPressed: saveData,
-                        child: const Text('Salvar informações'),
+                      DateFilterWidget(
+                        onChange: (value) {
+                          widget.leituraBloc.add(LeituraEventGetLeituras(
+                            endDate: value.endDate,
+                            startDate: value.startDate,
+                          ));
+                          log("start: ${value.startDate?.toIso8601String()} final: ${value.endDate.toIso8601String()}");
+                        },
                       ),
                       const SizedBox(
-                        width: 16,
+                        height: 24,
                       ),
-                      FilledButton(
-                        onPressed: () async {
-                          final XFile? image = await widget.picker
-                              .pickImage(source: ImageSource.camera);
-                          if (image == null) return;
-                          imageInFile = File(image.path);
-                          final imageInBase64 =
-                              convertImageFileToBase64String(File(image.path));
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: AnimatedBuilder(
+                          animation:
+                              Listenable.merge([valorTotal, valorTotalKwh]),
+                          builder: (context, snapshot) {
+                            return SizedBox(
+                              width: double.maxFinite,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Valor Total: ${formatCurrencyEuro(valorTotal.value)}',
+                                    key: const Key('valor_total'),
+                                    style: textTheme.labelMedium,
+                                    textAlign: TextAlign.start,
+                                  ),
+                                  Text(
+                                    'Total Kwh: ${valorTotalKwh.value}',
+                                    key: const Key('valor_total_kwh'),
+                                    style: textTheme.labelMedium,
+                                    textAlign: TextAlign.start,
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      TextFormField(
+                        controller: controller,
+                        keyboardType: TextInputType.number,
+                        validator: Validatorless.required('Campo obrigatório'),
+                        decoration: const InputDecoration(
+                          isDense: true,
+                          border: OutlineInputBorder(),
+                          label: Text('valor total de kwh'),
+                          hintText: 'Adicione o valor total de kwh do relógio',
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          ElevatedButton(
+                            onPressed: saveData,
+                            child: const Text('Salvar informações'),
+                          ),
+                          const SizedBox(
+                            width: 16,
+                          ),
+                          FilledButton(
+                            onPressed: () async {
+                              final XFile? image = await widget.picker
+                                  .pickImage(source: ImageSource.camera);
+                              if (image == null) return;
+                              imageInFile = File(image.path);
+                              final imageInBase64 =
+                                  convertImageFileToBase64String(
+                                      File(image.path));
 
-                          imageInUint8List.value =
-                              extractDecodeBitAndConvertToUint8List(
-                                  imageInBase64);
+                              imageInUint8List.value =
+                                  extractDecodeBitAndConvertToUint8List(
+                                      imageInBase64);
+                            },
+                            child: const Text('Tirar foto'),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      ValueListenableBuilder(
+                        valueListenable: imageInUint8List,
+                        builder: (context, img, snapshot) {
+                          return Visibility(
+                            visible: img.isNotEmpty,
+                            child: Image.memory(
+                              img,
+                              key: const Key('image_photo'),
+                            ),
+                          );
                         },
-                        child: const Text('Tirar foto'),
+                      ),
+                      BlocBuilder<LeituraBloc, LeituraState>(
+                        bloc: widget.leituraBloc,
+                        builder: (context, state) {
+                          if (state is LeituraStateLoading) {
+                            return const Center(
+                              child: CircularProgressIndicator.adaptive(),
+                            );
+                          }
+
+                          if (state is LeituraStateLoaded) {
+                            final leituras = state.leituras;
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ...leituras.leituras.asMap().entries.map(
+                                  (entry) {
+                                    final index = entry.key;
+                                    final leitura = entry.value;
+                                    final previousleitura = index > 0
+                                        ? leituras.leituras[index - 1]
+                                        : null;
+
+                                    final value = leitura.calcularValorKWH(
+                                        leituraAnterior: previousleitura);
+
+                                    final currentDate =
+                                        dateFormatDateTimeInStringFullTime(
+                                            DateTime.fromMillisecondsSinceEpoch(
+                                                leitura.dataInMilisegundos));
+
+                                    final previusDate = previousleitura != null
+                                        ? dateFormatDateTimeInStringFullTime(
+                                            DateTime.fromMillisecondsSinceEpoch(
+                                                previousleitura
+                                                    .dataInMilisegundos))
+                                        : "'Nenhuma data anterior'";
+
+                                    return Stack(
+                                      children: [
+                                        Container(
+                                          width: double.maxFinite,
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 8),
+                                          child: Card(
+                                            color: Colors.white,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 8,
+                                                      horizontal: 16),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        currentDate,
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 8,
+                                                      ),
+                                                      Text(
+                                                        "Contador: ${leitura.contador} kW",
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 8,
+                                                      ),
+                                                      SizedBox(
+                                                        width: 120,
+                                                        child: Stack(
+                                                          clipBehavior:
+                                                              Clip.none,
+                                                          children: [
+                                                            Text(
+                                                              'Valor: ${formatCurrencyEuro(value)}',
+                                                            ),
+                                                            Positioned(
+                                                              right: -15,
+                                                              bottom: -14,
+                                                              child:
+                                                                  PopupMenuButton(
+                                                                iconSize: 15,
+                                                                icon:
+                                                                    const Icon(
+                                                                  Icons
+                                                                      .error_outline_rounded,
+                                                                ),
+                                                                itemBuilder:
+                                                                    (context) {
+                                                                  return [
+                                                                    PopupMenuItem(
+                                                                      child:
+                                                                          Text(
+                                                                        'Esse valor é referente a $previusDate',
+                                                                      ),
+                                                                    ),
+                                                                  ];
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      Column(
+                                                        children: [
+                                                          IconButton(
+                                                            onPressed: () {
+                                                              Navigator
+                                                                  .pushNamed(
+                                                                context,
+                                                                "/detalhes_leitura",
+                                                                arguments: (
+                                                                  leitura:
+                                                                      leitura,
+                                                                  currency:
+                                                                      value,
+                                                                  currentDate:
+                                                                      currentDate
+                                                                ),
+                                                              );
+                                                            },
+                                                            icon: Icon(
+                                                              Icons
+                                                                  .open_in_full,
+                                                              color: theme
+                                                                  .colorScheme
+                                                                  .primary,
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            'Detalhes',
+                                                            style: theme
+                                                                .textTheme
+                                                                .bodySmall,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 16,
+                                                      ),
+                                                      Column(
+                                                        children: [
+                                                          IconButton(
+                                                            onPressed: () {
+                                                              showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder:
+                                                                    (context) {
+                                                                  return AlertDialog
+                                                                      .adaptive(
+                                                                    contentTextStyle: theme
+                                                                        .textTheme
+                                                                        .labelMedium
+                                                                        ?.copyWith(
+                                                                            color:
+                                                                                theme.colorScheme.error),
+                                                                    title: const Text(
+                                                                        'Tem certeza que deseja excluir ?'),
+                                                                    content:
+                                                                        const Text(
+                                                                            'Isso não poderá ser desfeito!'),
+                                                                    actions: [
+                                                                      TextButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                          Navigator.pop(
+                                                                              context);
+                                                                        },
+                                                                        child: const Text(
+                                                                            'Não'),
+                                                                      ),
+                                                                      FilledButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                          deletarLeitura(
+                                                                            leitura:
+                                                                                leitura,
+                                                                            leituras:
+                                                                                leituras,
+                                                                          );
+                                                                          Navigator.pop(
+                                                                              context);
+                                                                        },
+                                                                        child: const Text(
+                                                                            'Sim'),
+                                                                      )
+                                                                    ],
+                                                                  );
+                                                                },
+                                                              );
+                                                            },
+                                                            icon: Icon(
+                                                              Icons.delete,
+                                                              color: theme
+                                                                  .colorScheme
+                                                                  .error,
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            'Deletar',
+                                                            style: theme
+                                                                .textTheme
+                                                                .bodySmall
+                                                                ?.copyWith(
+                                                                    color: theme
+                                                                        .colorScheme
+                                                                        .error),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                )
+                              ],
+                            );
+                          }
+                          return const SizedBox();
+                        },
                       ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 24,
-                  ),
-                  ValueListenableBuilder(
-                    valueListenable: imageInUint8List,
-                    builder: (context, img, snapshot) {
-                      return Visibility(
-                        visible: img.isNotEmpty,
-                        child: Image.memory(
-                          img,
-                          key: const Key('image_photo'),
-                        ),
-                      );
-                    },
-                  ),
-                  BlocBuilder<LeituraBloc, LeituraState>(
-                    bloc: widget.leituraBloc,
-                    builder: (context, state) {
-                      if (state is LeituraStateLoading) {
-                        return const Center(
-                          child: CircularProgressIndicator.adaptive(),
-                        );
-                      }
-
-                      if (state is LeituraStateLoaded) {
-                        final leituras = state.leituras;
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ...leituras.leituras.asMap().entries.map(
-                              (entry) {
-                                final index = entry.key;
-                                final leitura = entry.value;
-                                final previousleitura = index > 0
-                                    ? leituras.leituras[index - 1]
-                                    : null;
-
-                                final value = leitura.calcularValorKWH(
-                                    leituraAnterior: previousleitura);
-
-                                final currentDate =
-                                    dateFormatDateTimeInStringFullTime(
-                                        DateTime.fromMillisecondsSinceEpoch(
-                                            leitura.dataInMilisegundos));
-
-                                final previusDate = previousleitura != null
-                                    ? dateFormatDateTimeInStringFullTime(
-                                        DateTime.fromMillisecondsSinceEpoch(
-                                            previousleitura.dataInMilisegundos))
-                                    : "'Nenhuma data anterior'";
-
-                                return Stack(
-                                  children: [
-                                    Container(
-                                      width: double.maxFinite,
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8),
-                                      child: Card(
-                                        color: Colors.white,
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 8, horizontal: 16),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    currentDate,
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 8,
-                                                  ),
-                                                  Text(
-                                                    "Contador: ${leitura.contador} kW",
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 8,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 120,
-                                                    child: Stack(
-                                                      clipBehavior: Clip.none,
-                                                      children: [
-                                                        Text(
-                                                          'Valor: ${formatCurrencyEuro(value)}',
-                                                        ),
-                                                        Positioned(
-                                                          right: -15,
-                                                          bottom: -14,
-                                                          child:
-                                                              PopupMenuButton(
-                                                            iconSize: 15,
-                                                            icon: const Icon(
-                                                              Icons
-                                                                  .error_outline_rounded,
-                                                            ),
-                                                            itemBuilder:
-                                                                (context) {
-                                                              return [
-                                                                PopupMenuItem(
-                                                                  child: Text(
-                                                                    'Esse valor é referente a $previusDate',
-                                                                  ),
-                                                                ),
-                                                              ];
-                                                            },
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Column(
-                                                    children: [
-                                                      IconButton(
-                                                        onPressed: () {
-                                                          Navigator.pushNamed(
-                                                            context,
-                                                            "/detalhes_leitura",
-                                                            arguments: (
-                                                              leitura: leitura,
-                                                              currency: value,
-                                                              currentDate:
-                                                                  currentDate
-                                                            ),
-                                                          );
-                                                        },
-                                                        icon: Icon(
-                                                          Icons.open_in_full,
-                                                          color: theme
-                                                              .colorScheme
-                                                              .primary,
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        'Detalhes',
-                                                        style: theme.textTheme
-                                                            .bodySmall,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(
-                                                    width: 16,
-                                                  ),
-                                                  Column(
-                                                    children: [
-                                                      IconButton(
-                                                        onPressed: () {
-                                                          showDialog(
-                                                            context: context,
-                                                            builder: (context) {
-                                                              return AlertDialog
-                                                                  .adaptive(
-                                                                contentTextStyle: theme
-                                                                    .textTheme
-                                                                    .labelMedium
-                                                                    ?.copyWith(
-                                                                        color: theme
-                                                                            .colorScheme
-                                                                            .error),
-                                                                title: const Text(
-                                                                    'Tem certeza que deseja excluir ?'),
-                                                                content: const Text(
-                                                                    'Isso não poderá ser desfeito!'),
-                                                                actions: [
-                                                                  TextButton(
-                                                                    onPressed:
-                                                                        () {
-                                                                      Navigator.pop(
-                                                                          context);
-                                                                    },
-                                                                    child: const Text(
-                                                                        'Não'),
-                                                                  ),
-                                                                  FilledButton(
-                                                                    onPressed:
-                                                                        () {
-                                                                      deletarLeitura(
-                                                                        leitura:
-                                                                            leitura,
-                                                                        leituras:
-                                                                            leituras,
-                                                                      );
-                                                                      Navigator.pop(
-                                                                          context);
-                                                                    },
-                                                                    child: const Text(
-                                                                        'Sim'),
-                                                                  )
-                                                                ],
-                                                              );
-                                                            },
-                                                          );
-                                                        },
-                                                        icon: Icon(
-                                                          Icons.delete,
-                                                          color: theme
-                                                              .colorScheme
-                                                              .error,
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        'Deletar',
-                                                        style: theme
-                                                            .textTheme.bodySmall
-                                                            ?.copyWith(
-                                                                color: theme
-                                                                    .colorScheme
-                                                                    .error),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            )
-                          ],
-                        );
-                      }
-                      return const SizedBox();
-                    },
-                  ),
-                ],
+                ),
               ),
             ),
           ),

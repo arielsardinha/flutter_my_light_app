@@ -12,12 +12,20 @@ final class LeituraRepositoryImpl implements LeituraRepository {
       : _clientHttp = clientHttp;
 
   @override
-  Future<LeiturasModel> getAll(
-      {required ProprietarioResponseModel proprietario}) async {
+  Future<LeiturasModel> getAll({
+    required ProprietarioResponseModel proprietario,
+    DateTime? endDate,
+    DateTime? startDate,
+  }) async {
     try {
       final request = Request(
         '/leituras',
-        body: proprietario.toJson(),
+        body: {
+          ...proprietario.toJson(),
+          "initialDate":
+              startDate?.subtract(const Duration(days: 1)).toIso8601String(),
+          "finalDate": endDate?.toIso8601String(),
+        },
       );
       final response = await _clientHttp.get<Map<String, dynamic>>(request);
       if (response.data == null) {

@@ -13,13 +13,16 @@ final class RemoteGetLeituras implements GetLeiturasUseCase {
       : _storage = storage,
         _leituraRepository = leituraRepository;
   @override
-  Future<LeiturasEntity> exec() async {
+  Future<LeiturasEntity> exec({DateTime? endDate, DateTime? startDate}) async {
     final proprietario =
         await _storage.get<Map<String, dynamic>>(StorageEnum.proprietario);
     final proprietarioModel = ProprietarioResponseModel.fromJson(proprietario!);
 
-    final leiturasModel =
-        await _leituraRepository.getAll(proprietario: proprietarioModel);
+    final leiturasModel = await _leituraRepository.getAll(
+      proprietario: proprietarioModel,
+      endDate: endDate,
+      startDate: startDate,
+    );
 
     return LeiturasEntity(
       totalLeitura: leiturasModel.totalContadorPorDaCasa,
