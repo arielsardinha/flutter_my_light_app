@@ -5,6 +5,7 @@ import 'package:my_light_app/application/usecases/remote_delete_leitura.dart';
 import 'package:my_light_app/application/usecases/remote_get_casa.dart';
 import 'package:my_light_app/application/usecases/remote_get_casas.dart';
 import 'package:my_light_app/application/usecases/remote_get_leituras.dart';
+import 'package:my_light_app/application/usecases/remote_get_leiura_resumo.dart';
 import 'package:my_light_app/blocs/leitura_bloc/leitura_bloc.dart';
 import 'package:my_light_app/enterprise/entities/leitura_entity.dart';
 import 'package:my_light_app/infra/client_http/client_http_dio.dart';
@@ -15,6 +16,7 @@ import 'package:my_light_app/pages/config_page/config_page.dart';
 import 'package:my_light_app/pages/detalhes_leitura_page/detalhes_leitura_page.dart';
 import 'package:my_light_app/pages/home_page/home_page.dart';
 import 'package:my_light_app/pages/login_page/login_page.dart';
+import 'package:my_light_app/pages/resumo_leituras_page/resumo_leituras_page.dart';
 import 'package:my_light_app/pages/splash_page/splash_page.dart';
 
 void main() {
@@ -45,6 +47,10 @@ class MyApp extends StatelessWidget {
         storage: storage,
         leituraRepository: leituraRepository,
       ),
+    );
+    final getLeituraResumoUseCase = RemoteGetLeituraResumo(
+      storage: storage,
+      leituraRepository: leituraRepository,
     );
     return MaterialApp(
       title: 'Flutter Demo',
@@ -83,6 +89,9 @@ class MyApp extends StatelessWidget {
             currentDate: arguments.currentDate,
           );
         },
+        "/resumo_leituras": (context) => ResumoLeiturasPage(
+              getLeituraResumoUseCase: getLeituraResumoUseCase,
+            ),
       },
       initialRoute: '/splash',
       theme: ThemeData(

@@ -16,4 +16,8 @@ abstract interface class LeituraRepository {
   Future<LeituraModel> create({
     required LeituraCreateParamns newLeitura,
   });
+
+  Future<List<LeiturasResumoModel>> getResumo({
+    required ProprietarioResponseModel proprietario,
+  });
 }

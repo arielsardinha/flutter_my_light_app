@@ -78,3 +78,28 @@ class LeituraCreateParamns {
     return data;
   }
 }
+
+class LeiturasResumoModel {
+  final int totalLeitura;
+  final int consumo;
+  final DateTime dataLeitura;
+
+  LeiturasResumoModel({
+    required this.totalLeitura,
+    required this.consumo,
+    required this.dataLeitura,
+  });
+
+  factory LeiturasResumoModel.fromJson(Map<String, dynamic> json) =>
+      LeiturasResumoModel(
+        totalLeitura: json["total_leitura"],
+        consumo: json["consumo"],
+        dataLeitura: DateTime.parse(json["data_leitura"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "total_leitura": totalLeitura,
+        "consumo": consumo,
+        "data_leitura": dataLeitura.toIso8601String(),
+      };
+}

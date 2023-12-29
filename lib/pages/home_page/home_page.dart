@@ -16,22 +16,22 @@ import 'package:my_light_app/utils/mixins/convert_file.dart';
 import 'package:my_light_app/utils/mixins/date_formate.dart';
 import 'package:validatorless/validatorless.dart';
 
-class DateFilterWidget extends StatefulWidget with DateFormatMixin {
+class _DateFilterWidget extends StatefulWidget with DateFormatMixin {
   static DateTime startDate = DateTime.now().subtract(const Duration(days: 30));
   static DateTime endDate = DateTime.now();
   final void Function(({DateTime? startDate, DateTime endDate})) onChange;
-  const DateFilterWidget({super.key, required this.onChange});
+  const _DateFilterWidget({required this.onChange});
 
   @override
-  State<DateFilterWidget> createState() => _DateFilterWidgetState();
+  State<_DateFilterWidget> createState() => _DateFilterWidgetState();
 }
 
-class _DateFilterWidgetState extends State<DateFilterWidget> {
+class _DateFilterWidgetState extends State<_DateFilterWidget> {
   @override
   void initState() {
-    DateFilterWidget.startDate =
+    _DateFilterWidget.startDate =
         DateTime.now().subtract(const Duration(days: 30));
-    DateFilterWidget.endDate = DateTime.now();
+    _DateFilterWidget.endDate = DateTime.now();
     super.initState();
   }
 
@@ -39,23 +39,25 @@ class _DateFilterWidgetState extends State<DateFilterWidget> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate:
-          isStart ? DateFilterWidget.startDate : DateFilterWidget.endDate,
+          isStart ? _DateFilterWidget.startDate : _DateFilterWidget.endDate,
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
     );
     if (picked != null &&
         picked !=
-            (isStart ? DateFilterWidget.startDate : DateFilterWidget.endDate)) {
+            (isStart
+                ? _DateFilterWidget.startDate
+                : _DateFilterWidget.endDate)) {
       setState(() {
         if (isStart) {
-          DateFilterWidget.startDate = picked;
+          _DateFilterWidget.startDate = picked;
         } else {
-          DateFilterWidget.endDate = picked;
+          _DateFilterWidget.endDate = picked;
         }
       });
       widget.onChange((
-        startDate: DateFilterWidget.startDate,
-        endDate: DateFilterWidget.endDate
+        startDate: _DateFilterWidget.startDate,
+        endDate: _DateFilterWidget.endDate
       ));
     }
   }
@@ -76,23 +78,23 @@ class _DateFilterWidgetState extends State<DateFilterWidget> {
             GestureDetector(
               onTap: () => _selectDate(context, true),
               child: Chip(
-                onDeleted: DateFilterWidget.startDate.day !=
+                onDeleted: _DateFilterWidget.startDate.day !=
                         DateTime.now().subtract(const Duration(days: 30)).day
                     ? () {
                         setState(() {
-                          DateFilterWidget.startDate =
+                          _DateFilterWidget.startDate =
                               DateTime.now().subtract(const Duration(days: 30));
                         });
                         widget.onChange((
-                          startDate: DateFilterWidget.startDate,
-                          endDate: DateFilterWidget.endDate
+                          startDate: _DateFilterWidget.startDate,
+                          endDate: _DateFilterWidget.endDate
                         ));
                       }
                     : null,
                 labelStyle: theme.textTheme.bodySmall,
                 visualDensity: VisualDensity.compact,
                 label: Text(
-                  'Início: ${widget.dateFormatDateTimeInStringFullTime(DateFilterWidget.startDate).split('-')[0].trim()}',
+                  'Início: ${widget.dateFormatDateTimeInStringFullTime(_DateFilterWidget.startDate).split('-')[0].trim()}',
                 ),
               ),
             ),
@@ -102,21 +104,21 @@ class _DateFilterWidgetState extends State<DateFilterWidget> {
             GestureDetector(
               onTap: () => _selectDate(context, false),
               child: Chip(
-                onDeleted: DateFilterWidget.endDate.day != DateTime.now().day
+                onDeleted: _DateFilterWidget.endDate.day != DateTime.now().day
                     ? () {
                         setState(() {
-                          DateFilterWidget.endDate = DateTime.now();
+                          _DateFilterWidget.endDate = DateTime.now();
                         });
                         widget.onChange((
-                          startDate: DateFilterWidget.startDate,
-                          endDate: DateFilterWidget.endDate
+                          startDate: _DateFilterWidget.startDate,
+                          endDate: _DateFilterWidget.endDate
                         ));
                       }
                     : null,
                 labelStyle: theme.textTheme.bodySmall,
                 visualDensity: VisualDensity.compact,
                 label: Text(
-                  'Fim: ${widget.dateFormatDateTimeInStringFullTime(DateFilterWidget.endDate).split('-')[0].trim()}',
+                  'Fim: ${widget.dateFormatDateTimeInStringFullTime(_DateFilterWidget.endDate).split('-')[0].trim()}',
                 ),
               ),
             ),
@@ -219,8 +221,8 @@ class _HomePageState extends State<HomePage>
 
   Future<void> getLeituras() async {
     widget.leituraBloc.add(LeituraEventGetLeituras(
-        endDate: DateFilterWidget.endDate,
-        startDate: DateFilterWidget.startDate));
+        endDate: _DateFilterWidget.endDate,
+        startDate: _DateFilterWidget.startDate));
   }
 
   @override
@@ -235,6 +237,12 @@ class _HomePageState extends State<HomePage>
         appBar: AppBar(
           title: const Text('Registre sua energia elétrica'),
           actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/resumo_leituras');
+              },
+              icon: const Icon(Icons.file_open),
+            ),
             ValueListenableBuilder(
               valueListenable: isADM,
               builder: (context, isADM, snapshot) {
@@ -278,7 +286,7 @@ class _HomePageState extends State<HomePage>
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      DateFilterWidget(
+                      _DateFilterWidget(
                         onChange: (value) {
                           widget.leituraBloc.add(LeituraEventGetLeituras(
                             endDate: value.endDate,

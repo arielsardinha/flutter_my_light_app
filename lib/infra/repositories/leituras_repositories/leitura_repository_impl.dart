@@ -63,4 +63,19 @@ final class LeituraRepositoryImpl implements LeituraRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<List<LeiturasResumoModel>> getResumo(
+      {required ProprietarioResponseModel proprietario}) async {
+    try {
+      final resumo = await _clientHttp.get<List<dynamic>>(Request(
+        '/leituras/resumo',
+        body: proprietario.toJson(),
+      ));
+
+      return resumo.data!.map((e) => LeiturasResumoModel.fromJson(e)).toList();
+    } on HttpError catch (_) {
+      rethrow;
+    }
+  }
 }
