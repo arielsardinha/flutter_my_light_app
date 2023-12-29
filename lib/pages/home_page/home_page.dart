@@ -284,181 +284,169 @@ class _HomePageState extends State<HomePage>
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 8, horizontal: 16),
-                                          child: Column(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                                CrossAxisAlignment.center,
                                             children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
+                                              Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        currentDate,
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 8,
-                                                      ),
-                                                      Text(
-                                                        "Contador: ${leitura.contador} kW",
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 8,
-                                                      ),
-                                                      SizedBox(
-                                                        width: 120,
-                                                        child: Stack(
-                                                          clipBehavior:
-                                                              Clip.none,
-                                                          children: [
-                                                            Text(
-                                                              'Valor: ${formatCurrencyEuro(value)}',
-                                                            ),
-                                                            Positioned(
-                                                              right: -15,
-                                                              bottom: -14,
-                                                              child:
-                                                                  PopupMenuButton(
-                                                                iconSize: 15,
-                                                                icon:
-                                                                    const Icon(
-                                                                  Icons
-                                                                      .error_outline_rounded,
-                                                                ),
-                                                                itemBuilder:
-                                                                    (context) {
-                                                                  return [
-                                                                    PopupMenuItem(
-                                                                      child:
-                                                                          Text(
-                                                                        'Esse valor é referente a $previusDate',
-                                                                      ),
-                                                                    ),
-                                                                  ];
-                                                                },
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
+                                                  Text(
+                                                    currentDate,
                                                   ),
-                                                  InkWell(
-                                                    onTap: () {
-                                                      showDialog(
-                                                        context: context,
-                                                        builder: (context) {
-                                                          return Dialog(
-                                                            child: Container(
-                                                              height:
-                                                                  size.width *
-                                                                      0.9,
-                                                              width:
-                                                                  size.width *
-                                                                      0.9,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            24),
-                                                                image: leitura.photo ==
-                                                                            null ||
-                                                                        leitura
-                                                                            .photo!
-                                                                            .isEmpty
-                                                                    ? null
-                                                                    : DecorationImage(
-                                                                        fit: BoxFit
-                                                                            .cover,
-                                                                        image: NetworkImage(
-                                                                            leitura.photo!),
-                                                                      ),
-                                                              ),
+                                                  const SizedBox(
+                                                    height: 8,
+                                                  ),
+                                                  Text(
+                                                    "Contador: ${leitura.contador} kW",
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 8,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 120,
+                                                    child: Stack(
+                                                      clipBehavior: Clip.none,
+                                                      children: [
+                                                        Text(
+                                                          'Valor: ${formatCurrencyEuro(value)}',
+                                                        ),
+                                                        Positioned(
+                                                          right: -15,
+                                                          bottom: -14,
+                                                          child:
+                                                              PopupMenuButton(
+                                                            iconSize: 15,
+                                                            icon: const Icon(
+                                                              Icons
+                                                                  .error_outline_rounded,
+                                                            ),
+                                                            itemBuilder:
+                                                                (context) {
+                                                              return [
+                                                                PopupMenuItem(
+                                                                  child: Text(
+                                                                    'Esse valor é referente a $previusDate',
+                                                                  ),
+                                                                ),
+                                                              ];
+                                                            },
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Column(
+                                                    children: [
+                                                      IconButton(
+                                                        onPressed: () {
+                                                          Navigator.pushNamed(
+                                                            context,
+                                                            "/detalhes_leitura",
+                                                            arguments: (
+                                                              leitura: leitura,
+                                                              currency: value,
+                                                              currentDate:
+                                                                  currentDate
                                                             ),
                                                           );
                                                         },
-                                                      );
-                                                    },
-                                                    child: Container(
-                                                      height: 100,
-                                                      width: 100,
-                                                      decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(16),
-                                                        image: leitura.photo ==
-                                                                    null ||
-                                                                leitura.photo!
-                                                                    .isEmpty
-                                                            ? null
-                                                            : DecorationImage(
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                                image: NetworkImage(
-                                                                    leitura
-                                                                        .photo!),
-                                                              ),
+                                                        icon: Icon(
+                                                          Icons.open_in_full,
+                                                          color: theme
+                                                              .colorScheme
+                                                              .primary,
+                                                        ),
                                                       ),
-                                                    ),
+                                                      Text(
+                                                        'Detalhes',
+                                                        style: theme.textTheme
+                                                            .bodySmall,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 16,
+                                                  ),
+                                                  Column(
+                                                    children: [
+                                                      IconButton(
+                                                        onPressed: () {
+                                                          showDialog(
+                                                            context: context,
+                                                            builder: (context) {
+                                                              return AlertDialog
+                                                                  .adaptive(
+                                                                contentTextStyle: theme
+                                                                    .textTheme
+                                                                    .labelMedium
+                                                                    ?.copyWith(
+                                                                        color: theme
+                                                                            .colorScheme
+                                                                            .error),
+                                                                title: const Text(
+                                                                    'Tem certeza que deseja excluir ?'),
+                                                                content: const Text(
+                                                                    'Isso não poderá ser desfeito!'),
+                                                                actions: [
+                                                                  TextButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.pop(
+                                                                          context);
+                                                                    },
+                                                                    child: const Text(
+                                                                        'Não'),
+                                                                  ),
+                                                                  FilledButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      deletarLeitura(
+                                                                        leitura:
+                                                                            leitura,
+                                                                        leituras:
+                                                                            leituras,
+                                                                      );
+                                                                      Navigator.pop(
+                                                                          context);
+                                                                    },
+                                                                    child: const Text(
+                                                                        'Sim'),
+                                                                  )
+                                                                ],
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                        icon: Icon(
+                                                          Icons.delete,
+                                                          color: theme
+                                                              .colorScheme
+                                                              .error,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        'Deletar',
+                                                        style: theme
+                                                            .textTheme.bodySmall
+                                                            ?.copyWith(
+                                                                color: theme
+                                                                    .colorScheme
+                                                                    .error),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ],
                                               ),
                                             ],
                                           ),
-                                        ),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      right: -10,
-                                      top: -10,
-                                      child: IconButton(
-                                        onPressed: () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return AlertDialog.adaptive(
-                                                contentTextStyle: theme
-                                                    .textTheme.labelMedium
-                                                    ?.copyWith(
-                                                        color: theme
-                                                            .colorScheme.error),
-                                                title: const Text(
-                                                    'Tem certeza que deseja excluir ?'),
-                                                content: const Text(
-                                                    'Isso não poderá ser desfeito!'),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: const Text('Não'),
-                                                  ),
-                                                  FilledButton(
-                                                    onPressed: () {
-                                                      deletarLeitura(
-                                                        leitura: leitura,
-                                                        leituras: leituras,
-                                                      );
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: const Text('Sim'),
-                                                  )
-                                                ],
-                                              );
-                                            },
-                                          );
-                                        },
-                                        icon: Icon(
-                                          Icons.delete,
-                                          color: theme.colorScheme.primary,
                                         ),
                                       ),
                                     ),
@@ -469,7 +457,6 @@ class _HomePageState extends State<HomePage>
                           ],
                         );
                       }
-
                       return const SizedBox();
                     },
                   ),
