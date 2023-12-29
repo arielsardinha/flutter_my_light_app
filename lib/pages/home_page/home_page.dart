@@ -17,6 +17,8 @@ import 'package:my_light_app/utils/mixins/date_formate.dart';
 import 'package:validatorless/validatorless.dart';
 
 class DateFilterWidget extends StatefulWidget with DateFormatMixin {
+  static DateTime startDate = DateTime.now().subtract(const Duration(days: 30));
+  static DateTime endDate = DateTime.now();
   final void Function(({DateTime? startDate, DateTime endDate})) onChange;
   const DateFilterWidget({super.key, required this.onChange});
 
@@ -25,32 +27,36 @@ class DateFilterWidget extends StatefulWidget with DateFormatMixin {
 }
 
 class _DateFilterWidgetState extends State<DateFilterWidget> {
-  late DateTime startDate;
-
-  late DateTime endDate;
   @override
   void initState() {
-    startDate = DateTime.now().subtract(const Duration(days: 30));
-    endDate = DateTime.now();
+    DateFilterWidget.startDate =
+        DateTime.now().subtract(const Duration(days: 30));
+    DateFilterWidget.endDate = DateTime.now();
     super.initState();
   }
 
   Future<void> _selectDate(BuildContext context, bool isStart) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: isStart ? startDate : endDate,
+      initialDate:
+          isStart ? DateFilterWidget.startDate : DateFilterWidget.endDate,
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
     );
-    if (picked != null && picked != (isStart ? startDate : endDate)) {
+    if (picked != null &&
+        picked !=
+            (isStart ? DateFilterWidget.startDate : DateFilterWidget.endDate)) {
       setState(() {
         if (isStart) {
-          startDate = picked;
+          DateFilterWidget.startDate = picked;
         } else {
-          endDate = picked;
+          DateFilterWidget.endDate = picked;
         }
       });
-      widget.onChange((startDate: startDate, endDate: endDate));
+      widget.onChange((
+        startDate: DateFilterWidget.startDate,
+        endDate: DateFilterWidget.endDate
+      ));
     }
   }
 
@@ -70,21 +76,23 @@ class _DateFilterWidgetState extends State<DateFilterWidget> {
             GestureDetector(
               onTap: () => _selectDate(context, true),
               child: Chip(
-                onDeleted: startDate.day !=
+                onDeleted: DateFilterWidget.startDate.day !=
                         DateTime.now().subtract(const Duration(days: 30)).day
                     ? () {
                         setState(() {
-                          startDate =
+                          DateFilterWidget.startDate =
                               DateTime.now().subtract(const Duration(days: 30));
                         });
-                        widget
-                            .onChange((startDate: startDate, endDate: endDate));
+                        widget.onChange((
+                          startDate: DateFilterWidget.startDate,
+                          endDate: DateFilterWidget.endDate
+                        ));
                       }
                     : null,
                 labelStyle: theme.textTheme.bodySmall,
                 visualDensity: VisualDensity.compact,
                 label: Text(
-                  'Início: ${widget.dateFormatDateTimeInStringFullTime(startDate).split('-')[0].trim()}',
+                  'Início: ${widget.dateFormatDateTimeInStringFullTime(DateFilterWidget.startDate).split('-')[0].trim()}',
                 ),
               ),
             ),
@@ -94,19 +102,21 @@ class _DateFilterWidgetState extends State<DateFilterWidget> {
             GestureDetector(
               onTap: () => _selectDate(context, false),
               child: Chip(
-                onDeleted: endDate.day != DateTime.now().day
+                onDeleted: DateFilterWidget.endDate.day != DateTime.now().day
                     ? () {
                         setState(() {
-                          endDate = DateTime.now();
+                          DateFilterWidget.endDate = DateTime.now();
                         });
-                        widget
-                            .onChange((startDate: startDate, endDate: endDate));
+                        widget.onChange((
+                          startDate: DateFilterWidget.startDate,
+                          endDate: DateFilterWidget.endDate
+                        ));
                       }
                     : null,
                 labelStyle: theme.textTheme.bodySmall,
                 visualDensity: VisualDensity.compact,
                 label: Text(
-                  'Fim: ${widget.dateFormatDateTimeInStringFullTime(endDate).split('-')[0].trim()}',
+                  'Fim: ${widget.dateFormatDateTimeInStringFullTime(DateFilterWidget.endDate).split('-')[0].trim()}',
                 ),
               ),
             ),
@@ -208,11 +218,9 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<void> getLeituras() async {
-    final startDate = DateTime.now().subtract(const Duration(days: 30));
-
-    final endDate = DateTime.now();
-    widget.leituraBloc
-        .add(LeituraEventGetLeituras(endDate: endDate, startDate: startDate));
+    widget.leituraBloc.add(LeituraEventGetLeituras(
+        endDate: DateFilterWidget.endDate,
+        startDate: DateFilterWidget.startDate));
   }
 
   @override
