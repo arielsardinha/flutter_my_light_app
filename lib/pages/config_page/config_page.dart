@@ -6,7 +6,7 @@ import 'package:my_light_app/enterprise/usecases/get_casas_usecase.dart';
 import 'package:my_light_app/infra/repositories/casa_repositories/casa_model.dart';
 import 'package:my_light_app/infra/storage/storage.dart';
 
-class ConfigPage extends StatelessWidget {
+class ConfigPage extends StatefulWidget {
   final GetCasasUseCase getCasasUseCase;
   final Storage storage;
   const ConfigPage({
@@ -14,6 +14,23 @@ class ConfigPage extends StatelessWidget {
     required this.getCasasUseCase,
     required this.storage,
   });
+
+  @override
+  State<ConfigPage> createState() => _ConfigPageState();
+}
+
+class _ConfigPageState extends State<ConfigPage> {
+  final proprietarioCtl = TextEditingController();
+  @override
+  void initState() {
+    widget.storage
+        .get<Map<String, dynamic>>(StorageEnum.proprietario)
+        .then((value) {
+      final proprietario = ProprietarioResponseModel.fromJson(value!);
+      proprietarioCtl.text = proprietario.nomeProprietario;
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +47,7 @@ class ConfigPage extends StatelessWidget {
             icon: const Icon(Icons.arrow_back)),
       ),
       body: FutureBuilder(
-        future: getCasasUseCase.exec(),
+        future: widget.getCasasUseCase.exec(),
         builder: (context, snapshot) {
           log(snapshot.data.toString());
           if (snapshot.data != null) {
@@ -40,6 +57,7 @@ class ConfigPage extends StatelessWidget {
               child: Column(
                 children: [
                   LigthSelect(
+                    controller: proprietarioCtl,
                     forceShowKeyboard: true,
                     onTapItem: (value) {
                       final casa = value?.value;
@@ -49,7 +67,7 @@ class ConfigPage extends StatelessWidget {
                           nivelAcesso: "ADM",
                           nomeProprietario: casa.proprietario,
                         );
-                        storage.save(
+                        widget.storage.save(
                           key: StorageEnum.proprietario,
                           value: model.toJson(),
                         );
