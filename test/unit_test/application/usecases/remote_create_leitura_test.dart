@@ -4,16 +4,19 @@ import 'package:my_light_app/application/usecases/remote_create_leitura.dart';
 import 'package:my_light_app/enterprise/entities/leitura_entity.dart';
 import 'package:my_light_app/enterprise/entities/leituras_entity.dart';
 import 'package:my_light_app/enterprise/usecases/create_leitura_usecase.dart';
+import 'package:my_light_app/infra/repositories/leituras_repositories/leitura_repository.dart';
 import 'package:my_light_app/infra/storage/storage.dart';
 
 import '../../../mocs/mocs.mocks.dart';
 
 void main() {
   late CreateLeituraUseCase createLeituraUseCase;
+  late final LeituraRepository leituraRepository;
   late Storage storage;
   late File tempFile;
   late IOSink ioSink;
   setUpAll(() {
+    leituraRepository = MockLeituraRepository();
     tempFile = File('test_image.png');
     ioSink = tempFile.openWrite();
     storage = MockStorage();
@@ -22,6 +25,7 @@ void main() {
   setUp(() async {
     createLeituraUseCase = RemoteCreateLeitura(
       storage: storage,
+      leituraRepository: leituraRepository,
     );
   });
 
@@ -35,7 +39,7 @@ void main() {
       createLeituraUseCase.exec(
         leituras: LeiturasEntity(leituras: []),
         photo: tempFile,
-        contador: '100',
+        contador: 100,
       ),
       completes,
     );
@@ -45,7 +49,7 @@ void main() {
       () async => await createLeituraUseCase.exec(
         leituras: LeiturasEntity(leituras: []),
         photo: File(''),
-        contador: '100',
+        contador: 100,
       ),
       throwsException,
     );
@@ -56,7 +60,7 @@ void main() {
       () async => await createLeituraUseCase.exec(
         leituras: LeiturasEntity(leituras: []),
         photo: tempFile,
-        contador: '',
+        contador: 0,
       ),
       throwsException,
     );
@@ -70,7 +74,7 @@ void main() {
       () => createLeituraUseCase.exec(
         leituras: LeiturasEntity(leituras: []),
         photo: tempFile,
-        contador: '100',
+        contador: 100,
       ),
       throwsException,
     );
@@ -83,13 +87,14 @@ void main() {
       createLeituraUseCase.exec(
         leituras: LeiturasEntity(leituras: [
           LeituraEntity(
-            contador: '100',
+            id: '',
+            contador: 100,
             dataInMilisegundos: DateTime.now().millisecondsSinceEpoch,
             photo: '',
           ),
         ]),
         photo: tempFile,
-        contador: '100',
+        contador: 100,
       ),
       completes,
     );

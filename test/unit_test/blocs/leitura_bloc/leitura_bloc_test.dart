@@ -44,8 +44,10 @@ void main() {
       'Deve executar o estado de [loading loading loaded] para garantir que além de uma leitura ser deletada ele busque os dados',
       () async {
     leituraBloc.add(LeituraEventDeleteLeitura(
+      onLoaded: () {},
       leitura: LeituraEntity(
-        contador: '100',
+        id: '',
+        contador: 100,
         dataInMilisegundos: DateTime.now().millisecondsSinceEpoch,
         photo: '',
       ),
@@ -69,7 +71,8 @@ void main() {
       () async {
     leituraBloc.add(
       LeituraEventCreateLeitura(
-        contador: '100',
+        onLoaded: () {},
+        contador: 100,
         photo: File(''),
         leituras: LeiturasEntity(
           leituras: [],

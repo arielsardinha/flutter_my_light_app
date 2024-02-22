@@ -38,6 +38,7 @@ void main() {
     );
     storage = StorageSharedPreferences();
     deleteLeituraUseCase = RemoteDeleteLeitura(
+      leituraRepository: leituraRepository,
       storage: storage,
     );
     getLeiturasUseCase = RemoteGetLeituras(
@@ -45,6 +46,7 @@ void main() {
       storage: storage,
     );
     createLeituraUseCase = RemoteCreateLeitura(
+      leituraRepository: leituraRepository,
       storage: storage,
     );
     leituraBloc = LeituraBloc(

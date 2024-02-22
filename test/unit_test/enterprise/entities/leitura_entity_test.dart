@@ -5,7 +5,8 @@ void main() {
   test('deve instanciar corretamente', () {
     final dataInMilisegundos = DateTime.now().millisecondsSinceEpoch;
     final leitura = LeituraEntity(
-      contador: '123',
+      id: '',
+      contador: 100,
       dataInMilisegundos: dataInMilisegundos,
       photo: 'photo',
     );

@@ -6,7 +6,8 @@ void main() {
   final dataInMilisegundos = DateTime.now().millisecondsSinceEpoch;
   final leituras = List<LeituraEntity>.generate(3, (index) {
     return LeituraEntity(
-      contador: (index * 10).toString(),
+      id: '',
+      contador: (index * 10).toInt(),
       dataInMilisegundos: dataInMilisegundos,
       photo: '',
     );
@@ -22,12 +23,14 @@ void main() {
       () {
     final leituras = <LeituraEntity>[
       LeituraEntity(
-        contador: '0',
+        id: '',
+        contador: 0,
         dataInMilisegundos: dataInMilisegundos,
         photo: '',
       ),
       LeituraEntity(
-        contador: '20',
+        id: '',
+        contador: 20,
         dataInMilisegundos: dataInMilisegundos,
         photo: '',
       ),
@@ -43,28 +46,14 @@ void main() {
     {
       final leituras = <LeituraEntity>[
         LeituraEntity(
-          contador: '100',
+          id: '',
+          contador: 100,
           dataInMilisegundos: dataInMilisegundos,
           photo: '',
         ),
         LeituraEntity(
-          contador: '100',
-          dataInMilisegundos: dataInMilisegundos,
-          photo: '',
-        ),
-      ];
-      final leiturasEntity = LeiturasEntity(leituras: leituras);
-
-      final (valorTotal: vTotal, valorTotalKwh: vTotalKwh) =
-          leiturasEntity.calcularFaturaTotal();
-      expect(vTotalKwh, 200);
-      expect(vTotal, 155.79);
-    }
-
-    {
-      final leituras = <LeituraEntity>[
-        LeituraEntity(
-          contador: '200',
+          id: '',
+          contador: 100,
           dataInMilisegundos: dataInMilisegundos,
           photo: '',
         ),
@@ -80,7 +69,25 @@ void main() {
     {
       final leituras = <LeituraEntity>[
         LeituraEntity(
-          contador: '20',
+          id: '',
+          contador: 200,
+          dataInMilisegundos: dataInMilisegundos,
+          photo: '',
+        ),
+      ];
+      final leiturasEntity = LeiturasEntity(leituras: leituras);
+
+      final (valorTotal: vTotal, valorTotalKwh: vTotalKwh) =
+          leiturasEntity.calcularFaturaTotal();
+      expect(vTotalKwh, 200);
+      expect(vTotal, 155.79);
+    }
+
+    {
+      final leituras = <LeituraEntity>[
+        LeituraEntity(
+          id: '',
+          contador: 20,
           dataInMilisegundos: dataInMilisegundos,
           photo: '',
         ),
@@ -96,7 +103,8 @@ void main() {
     {
       final leituras = <LeituraEntity>[
         LeituraEntity(
-          contador: '100',
+          id: '',
+          contador: 100,
           dataInMilisegundos: dataInMilisegundos,
           photo: '',
         ),
@@ -112,7 +120,8 @@ void main() {
     {
       final leituras = <LeituraEntity>[
         LeituraEntity(
-          contador: '210',
+          id: '',
+          contador: 210,
           dataInMilisegundos: dataInMilisegundos,
           photo: '',
         ),
@@ -127,7 +136,8 @@ void main() {
     {
       final leituras = <LeituraEntity>[
         LeituraEntity(
-          contador: '300',
+          id: '',
+          contador: 300,
           dataInMilisegundos: dataInMilisegundos,
           photo: '',
         ),
@@ -142,7 +152,8 @@ void main() {
     {
       final leituras = <LeituraEntity>[
         LeituraEntity(
-          contador: '500',
+          id: '',
+          contador: 500,
           dataInMilisegundos: dataInMilisegundos,
           photo: '',
         ),
@@ -159,13 +170,15 @@ void main() {
   test('Deve calcular a diferença do kwh baseado no dia anterior corretamente',
       () {
     final leituraAtual = LeituraEntity(
-      contador: '20',
+      id: '',
+      contador: 20,
       dataInMilisegundos: dataInMilisegundos,
       photo: '',
     );
     {
       final leituraAnterior = LeituraEntity(
-        contador: '10',
+        id: '',
+        contador: 10,
         dataInMilisegundos: dataInMilisegundos,
         photo: '',
       );
@@ -176,7 +189,8 @@ void main() {
 
     {
       final leituraAnterior = LeituraEntity(
-        contador: '20',
+        id: '',
+        contador: 20,
         dataInMilisegundos: dataInMilisegundos,
         photo: '',
       );
@@ -187,7 +201,8 @@ void main() {
 
     {
       final leituraAnterior = LeituraEntity(
-        contador: '30',
+        id: '',
+        contador: 30,
         dataInMilisegundos: dataInMilisegundos,
         photo: '',
       );
